@@ -111,12 +111,19 @@ function configurarAuthSocket(io, socket, context) {
 
             socket.join(`player_${personagemId}`);
             
+            // ========== ENVIA TODOS OS DADOS DO PERSONAGEM ==========
             socket.emit('jogoIniciadoSucesso', {
                 id: personagem._id,
                 nome: personagem.nome,
                 sobrenome: personagem.sobrenome,
+                avatarUrl: personagem.avatarUrl,     // ← LINHA ADICIONADA!
+                dinheiro: personagem.economia?.dinheiroVivo || 150,
+                energia: personagem.necessidades?.energia || 100,
                 status: 'online'
             });
+            
+            console.log(`[THE FEED] Sessão iniciada: ${personagem.nome} ${personagem.sobrenome}`);
+            console.log(`[THE FEED] Avatar URL: ${personagem.avatarUrl}`);
             
             // Avisa outros jogadores
             socket.broadcast.emit('jogadorOnline', {
