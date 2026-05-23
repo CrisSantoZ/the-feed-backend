@@ -10,17 +10,29 @@ const { Server } = require('socket.io');
 const cors = require('cors');
 const mongoose = require('mongoose');
 
-// CORREÇÃO: Arquivos estão dentro da pasta SRC!
 const { conectarBanco } = require('./src/config/database');
-const { configurarSockets } = require('./src/sockets/gameSocket');  // ou ./src/config/gamesocket?
-const { iniciarTickService, getTickStatus } = require('./src/services/tickService');
+const { configurarSockets } = require('./src/sockets/gameSocket');
+const { iniciarTickService } = require('./src/services/tickService');
 
 const app = express();
-app.use(cors());
+
+// CORS mais específico
+app.use(cors({
+    origin: ['https://the-feed-peach.vercel.app', 'http://localhost:5500', 'http://127.0.0.1:5500'],
+    methods: ['GET', 'POST', 'OPTIONS'],
+    credentials: true
+}));
 
 const server = http.createServer(app);
 const io = new Server(server, {
-    cors: { origin: "*" }
+    cors: {
+        origin: ['https://the-feed-peach.vercel.app', 'http://localhost:5500', 'http://127.0.0.1:5500'],
+        methods: ['GET', 'POST'],
+        credentials: true,
+        allowedHeaders: ['Content-Type', 'Authorization']
+    },
+    transports: ['polling', 'websocket'],
+    allowEIO3: true
 });
 
 async function iniciarServidor() {
