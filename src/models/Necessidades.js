@@ -438,4 +438,25 @@ NecessidadesSchema.methods.getEfeitosNaSaude = function() {
     return dano;
 };
 
+NecessidadesSchema.methods.limitarHistoricos = function() {
+    const MAX_HISTORICO = 20;
+    
+    if (this.historicoRefeicoes.length > MAX_HISTORICO) {
+        this.historicoRefeicoes = this.historicoRefeicoes.slice(-MAX_HISTORICO);
+    }
+    
+    if (this.historicoSono.length > MAX_HISTORICO) {
+        this.historicoSono = this.historicoSono.slice(-MAX_HISTORICO);
+    }
+    
+    if (this.historicoHigiene.length > MAX_HISTORICO) {
+        this.historicoHigiene = this.historicoHigiene.slice(-MAX_HISTORICO);
+    }
+};
+
+// E chame no tickService:
+if (player.necessidades && player.necessidades.limitarHistoricos) {
+    player.necessidades.limitarHistoricos();
+}
+
 module.exports = NecessidadesSchema;

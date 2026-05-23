@@ -580,4 +580,17 @@ EconomiaSchema.methods.gerarRelatorio = function() {
     };
 };
 
+EconomiaSchema.methods.limitarTransacoes = function() {
+    const MAX_TRANSACOES = 50;
+    
+    if (this.historicoTransacoes.length > MAX_TRANSACOES) {
+        this.historicoTransacoes = this.historicoTransacoes.slice(-MAX_TRANSACOES);
+    }
+};
+
+// No tickService, chame:
+if (player.economia && player.economia.limitarTransacoes) {
+    player.economia.limitarTransacoes();
+}
+
 module.exports = EconomiaSchema;

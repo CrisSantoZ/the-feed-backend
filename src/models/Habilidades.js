@@ -226,7 +226,11 @@ const HabilidadesSchema = new mongoose.Schema({
     certificacoes: [CertificacaoSchema],
 
     // ==================== HISTÓRICO ====================
-    historicoProgresso: [HistoriaProgressoSchema],
+historicoProgresso: {
+    type: [HistoriaProgressoSchema],
+    default: [],
+    maxLength: 100  // ← limita a 100 registros no schema
+},
 
     // ==================== ESTATÍSTICAS ====================
     estatisticas: {
@@ -277,11 +281,16 @@ HabilidadesSchema.methods.adicionarXP = async function(categoria, nome, xpGanho,
     
     // Registra histórico
     this.historicoProgresso.push({
-        habilidade: nome,
-        data: new Date(),
-        ganhoXP: xpGanho,
-        motivo: motivo
-    });
+    habilidade: nome,
+    data: new Date(),
+    ganhoXP: xpGanho,
+    motivo: motivo
+});
+
+// ← ADICIONE ESTA LINHA PARA LIMITAR
+if (this.historicoProgresso.length > 100) {
+    this.historicoProgresso = this.historicoProgresso.slice(-100);
+}
     
     // Se subiu de nível, dar ponto de habilidade
     if (subiuNivel) {

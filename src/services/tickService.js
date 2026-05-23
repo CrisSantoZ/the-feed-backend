@@ -149,12 +149,17 @@ async function processarJogador(player, io) {
         
         // ==================== 4. ATUALIZA HABILIDADES ====================
         if (player.habilidades) {
-            // Treino diário automático
-            const treinoResultado = await player.habilidades.treinoDiario();
-            if (treinoResultado && treinoResultado.length > 0) {
-                houveMudanca = true;
-            }
-        }
+    // Treino diário automático
+    const treinoResultado = await player.habilidades.treinoDiario();
+    if (treinoResultado && treinoResultado.length > 0) {
+        houveMudanca = true;
+    }
+    
+    // ← ADICIONE ESTA LINHA PARA MANTER O HISTÓRICO CONTROLADO
+    if (player.habilidades.historicoProgresso.length > 50) {
+        player.habilidades.historicoProgresso = player.habilidades.historicoProgresso.slice(-50);
+    }
+}
         
         // ==================== 5. SALVA E NOTIFICA ====================
         if (houveMudanca) {
