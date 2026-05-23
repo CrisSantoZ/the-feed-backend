@@ -23,6 +23,9 @@ app.use(cors({
     credentials: true
 }));
 
+// ==================== SERVER ARQUIVOS ESTÁTICOS (AVATARS) ====================
+app.use('/uploads', express.static('public/uploads'));
+
 const server = http.createServer(app);
 const io = new Server(server, {
     cors: {

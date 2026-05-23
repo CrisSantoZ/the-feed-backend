@@ -1,6 +1,57 @@
 const Account = require('../models/Account');
 const Player = require('../models/Player');
 const bcrypt = require('bcryptjs');
+const fs = require('fs');
+const path = require('path');
+const https = require('https');
+
+// ==================== FUNÇÃO PARA BAIXAR E SALVAR IMAGEM ====================
+async function baixarESalvarImagem(url, playerId) {
+    const uploadDir = path.join(__dirname, '../../public/uploads/avatars');
+    
+    // Cria o diretório se não existir
+    if (!fs.existsSync(uploadDir)) {
+        fs.mkdirSync(uploadDir, { recursive: true });
+    }
+    
+    const filename = `${playerId}.jpg`;
+    const filepath = path.join(uploadDir, filename);
+    
+    return new Promise((resolve) => {
+        const client = url.startsWith('https') ? https : require('http');
+        
+        client.get(url, (response) => {
+            // Verifica se a resposta é uma imagem
+            const contentType = response.headers['content-type'];
+            if (!contentType || !contentType.startsWith('image/')) {
+                console.error('[IMAGEM] URL não retornou imagem:', url);
+                return resolve(null);
+            }
+            
+            const chunks = [];
+            response.on('data', (chunk) => chunks.push(chunk));
+            response.on('end', () => {
+                try {
+                    fs.writeFileSync(filepath, Buffer.concat(chunks));
+                    console.log(`[IMAGEM] Avatar salvo: ${filename}`);
+                    resolve(`/uploads/avatars/${filename}`);
+                } catch (err) {
+                    console.error('[IMAGEM] Erro ao salvar:', err);
+                    resolve(null);
+                }
+            });
+        }).on('error', (err) => {
+            console.error('[IMAGEM] Erro ao baixar:', err.message);
+            resolve(null);
+        });
+        
+        // Timeout de 10 segundos
+        setTimeout(() => {
+            console.error('[IMAGEM] Timeout ao baixar:', url);
+            resolve(null);
+        }, 10000);
+    });
+}
 
 /**
  * REGISTRO: Cria a Conta Mãe no banco de dados e aplica a trava de +18 anos
@@ -84,8 +135,8 @@ async function criarNovoPersonagem(dados) {
         dataNascimento, 
         faceclaim, 
         avatarUrl,
-        paisOrigem,      // ← NOVO
-        cidadeOrigem     // ← NOVO
+        paisOrigem,
+        cidadeOrigem
     } = dados;
 
     // 1. Validação básica
@@ -110,14 +161,14 @@ async function criarNovoPersonagem(dados) {
         throw new Error(`A identidade visual de '@${faceclaim}' já foi blindada por outro cidadão na rede.`);
     }
 
-    // 5. Criação do personagem com localização
+    // 5. Criação do personagem com localização (SALVANDO O AVATAR URL ORIGINAL)
     const novoPlayer = await Player.create({
         accountId,
         nome,
         sobrenome,
         dataNascimento,
         faceclaim: famosoLimpo,
-        avatarUrl,
+        avatarUrl: avatarUrl, // URL original do TMDB (temporária)
         dinheiro: 150,
         energia: 100,
         emprego: 'Desempregado',
@@ -127,7 +178,21 @@ async function criarNovoPersonagem(dados) {
         }
     });
 
-    // 6. Injeta o ID do novo personagem na Conta Mãe
+    // 6. BAIXA E SALVA A IMAGEM LOCALMENTE
+    console.log(`[THE FEED] Baixando avatar para ${nome}...`);
+    const avatarLocal = await baixarESalvarImagem(avatarUrl, novoPlayer._id);
+    
+    if (avatarLocal) {
+        // Atualiza o avatarUrl para a URL local
+        novoPlayer.avatarUrl = avatarLocal;
+        await novoPlayer.save();
+        console.log(`[THE FEED] Avatar salvo localmente: ${avatarLocal}`);
+    } else {
+        console.warn(`[THE FEED] Não foi possível baixar o avatar, mantendo URL original do TMDB`);
+        // Mantém a URL original do TMDB como fallback
+    }
+
+    // 7. Injeta o ID do novo personagem na Conta Mãe
     const contaAtualizada = await Account.findByIdAndUpdate(
         accountId,
         { $push: { personagens: novoPlayer._id } },
@@ -141,7 +206,7 @@ async function criarNovoPersonagem(dados) {
     const resposta = contaAtualizada.toObject();
     delete resposta.senha;
     
-    console.log(`[THE FEED] Novo personagem criado: ${nome} ${sobrenome} em ${paisOrigem}/${cidadeOrigem}`);
+    console.log(`[THE FEED] Novo personagem criado: ${nome} ${sobrenome} em ${paisOrigem}/${cidadeOrigem} | Avatar: ${novoPlayer.avatarUrl}`);
     
     return resposta;
 }

@@ -6,6 +6,9 @@ const Player = require('../models/Player');
 
 const TMDB_API_KEY = process.env.TMDB_API_KEY;
 const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
+const sharp = require('sharp');
+const fs = require('fs');
+const path = require('path');
 
 // ==================== FUNÇÃO DE SIMILARIDADE ====================
 function levenshtein(a, b) {
@@ -176,6 +179,34 @@ async function buscarImagensTMDB(termoBusca) {
     }
     
     return todasImagens;
+}
+
+async function baixarESalvarImagem(url, playerId) {
+    try {
+        // Baixa a imagem
+        const response = await fetch(url);
+        const buffer = await response.arrayBuffer();
+        
+        // Converte para Buffer
+        const imageBuffer = Buffer.from(buffer);
+        
+        // Define o nome do arquivo (padrão: playerId.jpg)
+        const filename = `${playerId}.jpg`;
+        const filepath = path.join(__dirname, '../../public/uploads/avatars', filename);
+        
+        // Processa a imagem (redimensiona e otimiza)
+        await sharp(imageBuffer)
+            .resize(200, 200, { fit: 'cover' })
+            .jpeg({ quality: 80 })
+            .toFile(filepath);
+        
+        // Retorna a URL pública
+        return `/uploads/avatars/${filename}`;
+        
+    } catch (erro) {
+        console.error('[IMAGEM] Erro ao salvar:', erro);
+        return null;
+    }
 }
 
 function embaralharArray(array) {
