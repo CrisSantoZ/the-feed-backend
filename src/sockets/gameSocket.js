@@ -54,11 +54,11 @@ function configurarSockets(io) {
             const { sala, mensagem } = data;
             const nome = socketNomes.get(socket.id) || 'Anônimo';
             
-            socket.to(sala).emit('novaMensagemLocal', {
-                nome: nome,
-                mensagem: mensagem,
-                hora: new Date().toLocaleTimeString()
-            });
+            io.to(sala).emit('novaMensagemLocal', {
+    nome: nome,
+    mensagem: mensagem,
+    hora: new Date().toLocaleTimeString()
+});
         });
 
         // ========== SAIR DA SALA ==========
