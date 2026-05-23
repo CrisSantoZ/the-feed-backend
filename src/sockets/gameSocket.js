@@ -8,7 +8,7 @@ const Player = require('../models/Player');
 const Account = require('../models/Account');
 const { Groq } = require('groq-sdk');
 
-// Importa os módulos de socket (que vamos criar)
+// Importa os módulos de socket
 const { configurarAuthSocket } = require('./authSocket');
 const { configurarPlayerSocket } = require('./playerSocket');
 const { configurarNecessidadesSocket } = require('./necessidadesSocket');
@@ -22,50 +22,74 @@ const { configurarFaceclaimSocket } = require('./faceclaimSocket');
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
+// Armazena nome do jogador por socket
+const socketNomes = new Map();
+
 function configurarSockets(io) {
     io.on('connection', (socket) => {
         console.log(`📡 Novo terminal de rede conectado: ${socket.id}`);
         
-        // Armazena o playerId na sessão do socket (para uso nos módulos)
         let playerIdAtual = null;
 
-        // ==================== MÓDULOS DE SOCKET ====================
-        
-        // Autenticação (cadastro, login, seleção de personagem)
+        // ========== SALVAR NOME DO JOGADOR ==========
+        socket.on('setPlayerName', (nome) => {
+            socketNomes.set(socket.id, nome);
+            console.log(`[CHAT] ${nome} conectado`);
+        });
+
+        // ========== ENTRAR EM UMA SALA (CHAT LOCAL) ==========
+        socket.on('entrarSala', (salaId) => {
+            socket.join(salaId);
+            const nome = socketNomes.get(socket.id) || 'Anônimo';
+            console.log(`[CHAT] ${nome} entrou na sala: ${salaId}`);
+            
+            // Atualiza contador de pessoas na sala
+            const sala = io.sockets.adapter.rooms.get(salaId);
+            const contador = sala ? sala.size : 0;
+            io.to(salaId).emit('atualizarContadorSala', contador);
+        });
+
+        // ========== MENSAGEM LOCAL ==========
+        socket.on('mensagemLocal', (data) => {
+            const { sala, mensagem } = data;
+            const nome = socketNomes.get(socket.id) || 'Anônimo';
+            
+            socket.to(sala).emit('novaMensagemLocal', {
+                nome: nome,
+                mensagem: mensagem,
+                hora: new Date().toLocaleTimeString()
+            });
+        });
+
+        // ========== SAIR DA SALA ==========
+        socket.on('sairSala', (salaId) => {
+            socket.leave(salaId);
+            const nome = socketNomes.get(socket.id) || 'Anônimo';
+            console.log(`[CHAT] ${nome} saiu da sala: ${salaId}`);
+            
+            const sala = io.sockets.adapter.rooms.get(salaId);
+            const contador = sala ? sala.size : 0;
+            io.to(salaId).emit('atualizarContadorSala', contador);
+        });
+
+        // ==================== MÓDULOS DE SOCKET EXISTENTES ====================
         configurarAuthSocket(io, socket, { playerIdAtual });
-        
-        // Faceclaim (busca de imagens com IA)
         configurarFaceclaimSocket(io, socket, { groq });
-        
-        // Player (informações, tick, resumo)
         configurarPlayerSocket(io, socket, { playerIdAtual });
-        
-        // Necessidades (comer, beber, dormir, banheiro)
         configurarNecessidadesSocket(io, socket);
-        
-        // Saúde (dano, cura, remédios)
         configurarSaudeSocket(io, socket);
-        
-        // Idiomas (estudar, livros)
         configurarIdiomasSocket(io, socket);
-        
-        // Localização (viajar, mover)
         configurarLocalizacaoSocket(io, socket);
-        
-        // Economia (comprar, vender, trabalhar, transferir)
         configurarEconomiaSocket(io, socket);
-        
-        // Social (amizades, convites, mensagens)
         configurarSocialSocket(io, socket);
-        
-        // Inventário (itens, equipar, craft)
         configurarInventarioSocket(io, socket);
 
         // ==================== DESCONEXÃO ====================
         socket.on('disconnect', async () => {
-            console.log(`🔌 Conexão interrompida com o terminal: ${socket.id}`);
+            console.log(`🔌 Conexão interrompida: ${socket.id}`);
             
-            // Atualiza status offline do jogador
+            socketNomes.delete(socket.id);
+            
             if (playerIdAtual) {
                 const player = await Player.findById(playerIdAtual);
                 if (player) {
