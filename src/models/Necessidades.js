@@ -454,9 +454,4 @@ NecessidadesSchema.methods.limitarHistoricos = function() {
     }
 };
 
-// E chame no tickService:
-if (player.necessidades && player.necessidades.limitarHistoricos) {
-    player.necessidades.limitarHistoricos();
-}
-
 module.exports = NecessidadesSchema;

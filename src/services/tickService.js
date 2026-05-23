@@ -161,7 +161,27 @@ async function processarJogador(player, io) {
     }
 }
         
-        // ==================== 5. SALVA E NOTIFICA ====================
+               // ==================== 5. LIMITAR HISTÓRICOS (antes de salvar) ====================
+        
+        // Limitar histórico de habilidades
+        if (player.habilidades && player.habilidades.historicoProgresso && player.habilidades.historicoProgresso.length > 50) {
+            player.habilidades.historicoProgresso = player.habilidades.historicoProgresso.slice(-50);
+            houveMudanca = true;
+        }
+        
+        // Limitar históricos de necessidades
+        if (player.necessidades && player.necessidades.limitarHistoricos) {
+            player.necessidades.limitarHistoricos();
+            houveMudanca = true;
+        }
+        
+        // Limitar transações da economia
+        if (player.economia && player.economia.limitarTransacoes) {
+            player.economia.limitarTransacoes();
+            houveMudanca = true;
+        }
+        
+        // ==================== 6. SALVA E NOTIFICA ====================
         if (houveMudanca) {
             await player.save();
             

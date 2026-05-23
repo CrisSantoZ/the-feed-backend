@@ -588,9 +588,4 @@ EconomiaSchema.methods.limitarTransacoes = function() {
     }
 };
 
-// No tickService, chame:
-if (player.economia && player.economia.limitarTransacoes) {
-    player.economia.limitarTransacoes();
-}
-
 module.exports = EconomiaSchema;
