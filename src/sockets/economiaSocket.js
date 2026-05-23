@@ -1,5 +1,6 @@
 const Player = require('../models/Player');
 const PlayerController = require('../controllers/playerController');
+const { comerDireto } = require('../controllers/comidaController');
 
 function configurarEconomiaSocket(io, socket) {
     
@@ -19,6 +20,17 @@ function configurarEconomiaSocket(io, socket) {
             socket.emit('erroServidor', resultado.erro);
         }
     });
+
+    socket.on('comerDireto', async (data) => {
+    const { playerId, prato, preco, recuperacao } = data;
+    const resultado = await comerDireto(playerId, prato, preco, recuperacao);
+    
+    if (resultado.sucesso) {
+        socket.emit('comidaConsumida', resultado);
+    } else {
+        socket.emit('erroServidor', resultado.erro);
+    }
+});
     
     // Trabalhar / Receber salário
     socket.on('trabalhar', async (playerId) => {
