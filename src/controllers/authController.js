@@ -1,56 +1,37 @@
 const Account = require('../models/Account');
 const Player = require('../models/Player');
 const bcrypt = require('bcryptjs');
-const fs = require('fs');
-const path = require('path');
-const https = require('https');
+const cloudinary = require('cloudinary').v2;
 
-// ==================== FUNÇÃO PARA BAIXAR E SALVAR IMAGEM ====================
-async function baixarESalvarImagem(url, playerId) {
-    const uploadDir = path.join(__dirname, '../../public/uploads/avatars');
-    
-    // Cria o diretório se não existir
-    if (!fs.existsSync(uploadDir)) {
-        fs.mkdirSync(uploadDir, { recursive: true });
-    }
-    
-    const filename = `${playerId}.jpg`;
-    const filepath = path.join(uploadDir, filename);
-    
-    return new Promise((resolve) => {
-        const client = url.startsWith('https') ? https : require('http');
+// ==================== CONFIGURAÇÃO CLOUDINARY ====================
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
+});
+
+// ==================== FUNÇÃO PARA UPLOAD PARA CLOUDINARY ====================
+async function uploadParaCloudinary(url, playerId, nome, sobrenome) {
+    try {
+        console.log(`[CLOUDINARY] Enviando avatar para ${nome} ${sobrenome}...`);
         
-        client.get(url, (response) => {
-            // Verifica se a resposta é uma imagem
-            const contentType = response.headers['content-type'];
-            if (!contentType || !contentType.startsWith('image/')) {
-                console.error('[IMAGEM] URL não retornou imagem:', url);
-                return resolve(null);
-            }
-            
-            const chunks = [];
-            response.on('data', (chunk) => chunks.push(chunk));
-            response.on('end', () => {
-                try {
-                    fs.writeFileSync(filepath, Buffer.concat(chunks));
-                    console.log(`[IMAGEM] Avatar salvo: ${filename}`);
-                    resolve(`/uploads/avatars/${filename}`);
-                } catch (err) {
-                    console.error('[IMAGEM] Erro ao salvar:', err);
-                    resolve(null);
-                }
-            });
-        }).on('error', (err) => {
-            console.error('[IMAGEM] Erro ao baixar:', err.message);
-            resolve(null);
+        const resultado = await cloudinary.uploader.upload(url, {
+            folder: 'the-feed/avatars',
+            public_id: playerId.toString(),
+            transformation: [
+                { width: 200, height: 200, crop: 'fill' },
+                { quality: 'auto' },
+                { fetch_format: 'auto' }
+            ]
         });
         
-        // Timeout de 10 segundos
-        setTimeout(() => {
-            console.error('[IMAGEM] Timeout ao baixar:', url);
-            resolve(null);
-        }, 10000);
-    });
+        console.log(`[CLOUDINARY] Upload concluído: ${resultado.secure_url}`);
+        return resultado.secure_url;
+        
+    } catch (erro) {
+        console.error('[CLOUDINARY] Erro no upload:', erro.message);
+        return null;
+    }
 }
 
 /**
@@ -124,8 +105,7 @@ async function autenticarCidadao(dadosLogin) {
 }
 
 /**
- * NOVA IDENTIDADE: Grava o avatar no banco de dados e garante exclusividade do Faceclaim
- * Agora com suporte para país e cidade de origem!
+ * NOVA IDENTIDADE: Grava o avatar no Cloudinary e garante exclusividade do Faceclaim
  */
 async function criarNovoPersonagem(dados) {
     const { 
@@ -161,7 +141,7 @@ async function criarNovoPersonagem(dados) {
         throw new Error(`A identidade visual de '@${faceclaim}' já foi blindada por outro cidadão na rede.`);
     }
 
-    // 5. Criação do personagem com localização (SALVANDO O AVATAR URL ORIGINAL)
+    // 5. Criação do personagem (avatarUrl temporário)
     const novoPlayer = await Player.create({
         accountId,
         nome,
@@ -178,18 +158,21 @@ async function criarNovoPersonagem(dados) {
         }
     });
 
-    // 6. BAIXA E SALVA A IMAGEM LOCALMENTE
-    console.log(`[THE FEED] Baixando avatar para ${nome}...`);
-    const avatarLocal = await baixarESalvarImagem(avatarUrl, novoPlayer._id);
+    // 6. UPLOAD PARA CLOUDINARY
+    console.log(`[THE FEED] Enviando avatar para Cloudinary: ${nome} ${sobrenome}...`);
+    const avatarCloudinary = await uploadParaCloudinary(avatarUrl, novoPlayer._id, nome, sobrenome);
     
-    if (avatarLocal) {
-        // Atualiza o avatarUrl para a URL local
-        novoPlayer.avatarUrl = avatarLocal;
+    if (avatarCloudinary) {
+        novoPlayer.avatarUrl = avatarCloudinary;
         await novoPlayer.save();
-        console.log(`[THE FEED] Avatar salvo localmente: ${avatarLocal}`);
+        console.log(`[THE FEED] Avatar salvo no Cloudinary: ${avatarCloudinary}`);
     } else {
-        console.warn(`[THE FEED] Não foi possível baixar o avatar, mantendo URL original do TMDB`);
-        // Mantém a URL original do TMDB como fallback
+        // Fallback: avatar com iniciais
+        const iniciais = (nome.charAt(0) + sobrenome.charAt(0)).toUpperCase();
+        const fallbackUrl = `https://ui-avatars.com/api/?background=00f3ff&color=fff&bold=true&size=200&name=${encodeURIComponent(iniciais)}`;
+        novoPlayer.avatarUrl = fallbackUrl;
+        await novoPlayer.save();
+        console.warn(`[THE FEED] Usando fallback para avatar: ${fallbackUrl}`);
     }
 
     // 7. Injeta o ID do novo personagem na Conta Mãe
@@ -206,13 +189,28 @@ async function criarNovoPersonagem(dados) {
     const resposta = contaAtualizada.toObject();
     delete resposta.senha;
     
-    console.log(`[THE FEED] Novo personagem criado: ${nome} ${sobrenome} em ${paisOrigem}/${cidadeOrigem} | Avatar: ${novoPlayer.avatarUrl}`);
+    console.log(`[THE FEED] Novo personagem criado: ${nome} ${sobrenome} em ${paisOrigem}/${cidadeOrigem}`);
+    console.log(`[THE FEED] Avatar final: ${novoPlayer.avatarUrl}`);
     
     return resposta;
+}
+
+// Função para deletar avatar do Cloudinary (útil ao excluir personagem)
+async function deletarAvatarCloudinary(playerId) {
+    try {
+        const publicId = `the-feed/avatars/${playerId}`;
+        await cloudinary.uploader.destroy(publicId);
+        console.log(`[CLOUDINARY] Avatar deletado: ${playerId}`);
+        return true;
+    } catch (erro) {
+        console.error('[CLOUDINARY] Erro ao deletar:', erro.message);
+        return false;
+    }
 }
 
 module.exports = {
     registrarCidadao,
     autenticarCidadao,
-    criarNovoPersonagem
+    criarNovoPersonagem,
+    deletarAvatarCloudinary
 };
