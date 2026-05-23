@@ -1,3 +1,4 @@
+const Player = require('../models/Player');
 const PlayerController = require('../controllers/playerController');
 
 function configurarSocialSocket(io, socket) {
@@ -8,7 +9,6 @@ function configurarSocialSocket(io, socket) {
         const resultado = await PlayerController.enviarConviteAmizade(playerId, destinoId, mensagem);
         
         if (resultado.sucesso) {
-            // Notifica o destinatário
             io.to(`player_${destinoId}`).emit('conviteRecebido', {
                 de: resultado.para,
                 conviteId: resultado.convite?._id,
@@ -40,7 +40,6 @@ function configurarSocialSocket(io, socket) {
     socket.on('mensagemPrivada', async (data) => {
         const { destinoId, mensagem } = data;
         
-        // Busca nome do remetente
         const player = await Player.findById(socket.playerId);
         
         if (player) {
