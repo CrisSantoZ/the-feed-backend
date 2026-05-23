@@ -1,0 +1,17 @@
+# No PowerShell, execute:
+echo "# Dependências" > .gitignore
+echo "node_modules/" >> .gitignore
+echo "node_modules" >> .gitignore
+echo "" >> .gitignore
+echo "# Variáveis de ambiente (senhas!)" >> .gitignore
+echo ".env" >> .gitignore
+echo ".env.local" >> .gitignore
+echo ".env.production" >> .gitignore
+echo "" >> .gitignore
+echo "# Logs" >> .gitignore
+echo "*.log" >> .gitignore
+echo "logs/" >> .gitignore
+echo "" >> .gitignore
+echo "# Sistema operacional" >> .gitignore
+echo ".DS_Store" >> .gitignore
+echo "Thumbs.db" >> .gitignore
