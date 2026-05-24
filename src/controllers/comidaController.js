@@ -39,6 +39,12 @@ async function comerDireto(playerId, prato, preco, recuperacao) {
             player.necessidades.lazer = Math.min(100, player.necessidades.lazer + recuperacao.felicidade);
         }
         
+        // ✅ ADICIONAR ESTAS DUAS LINHAS
+        player.necessidades.ultimaRefeicao = new Date();
+        if (recuperacao.sede) {
+            player.necessidades.ultimaAgua = new Date();
+        }
+        
         // Registra transação
         await player.economia.adicionarTransacao('compra', preco, `Refeição: ${prato}`, 'alimentacao');
         
@@ -47,6 +53,7 @@ async function comerDireto(playerId, prato, preco, recuperacao) {
         console.log(`[COMIDA] ${player.nome} comeu ${prato} por ${simboloMoeda} ${preco}`);
         console.log(`[COMIDA] Saldo restante: ${simboloMoeda} ${player.economia.dinheiroVivo}`);
         console.log(`[COMIDA] Fome: ${player.necessidades?.fome}, Energia: ${player.necessidades?.energia}`);
+        console.log(`[COMIDA] ultimaRefeicao: ${player.necessidades?.ultimaRefeicao}`);
         
         return {
             sucesso: true,
