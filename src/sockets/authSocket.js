@@ -16,12 +16,51 @@ function configurarAuthSocket(io, socket, context) {
         }
     });
 
-    // Login
+    // Login (agora suporta reconexão por playerId)
     socket.on('entrarNoJogo', async (dadosLogin) => {
         try {
-            const conta = await authController.autenticarCidadao(dadosLogin);
+            let conta;
+            
+            // ========== NOVO: RECONEXÃO POR PLAYER ID ==========
+            if (dadosLogin.playerId) {
+                console.log(`[AUTH] Tentando reconexão para playerId: ${dadosLogin.playerId}`);
+                
+                const player = await Player.findById(dadosLogin.playerId).populate('accountId');
+                
+                if (!player) {
+                    return socket.emit('erroServidor', "Personagem não encontrado para reconexão.");
+                }
+                
+                // Busca a conta do jogador
+                const account = await Account.findById(player.accountId).populate('personagens');
+                
+                if (!account) {
+                    return socket.emit('erroServidor', "Conta não encontrada.");
+                }
+                
+                // Marca o personagem como online
+                player.setOnline(socket.id);
+                await player.save();
+                
+                // Prepara a resposta com o personagem selecionado
+                conta = account.toObject();
+                delete conta.senha;
+                
+                // Emite sucesso e já inicia a sessão
+                socket.emit('loginSucesso', conta);
+                
+                // Inicia a sessão do jogo automaticamente
+                await iniciarSessaoPersonagem(socket, player, context);
+                
+                console.log(`[THE FEED] Reconexão bem-sucedida: ${player.nome} ${player.sobrenome}`);
+                return;
+            }
+            
+            // ========== LOGIN NORMAL (usuário/senha) ==========
+            conta = await authController.autenticarCidadao(dadosLogin);
             socket.emit('loginSucesso', conta);
             console.log(`[THE FEED] Conta @${conta.username} acessou. Personagens: ${conta.personagens.length}`);
+            
         } catch (erro) {
             console.error(`[THE FEED] Falha na conexão: ${erro.message}`);
             socket.emit('erroServidor', erro.message);
@@ -96,50 +135,52 @@ function configurarAuthSocket(io, socket, context) {
 
     // Selecionar personagem e iniciar sessão
     socket.on('iniciarSessaoJogo', async (personagemId) => {
-        console.log(`[DEBUG] Iniciando sessão para ID: ${personagemId}`);
-        try {
-            const personagem = await Player.findById(personagemId);
-            
-            if (!personagem) {
-                return socket.emit('erroServidor', "Identidade não encontrada.");
-            }
-
-            // Armazena o playerId na sessão do socket
-            context.playerIdAtual = personagemId;
-            personagem.setOnline(socket.id);
-            await personagem.save();
-
-            socket.join(`player_${personagemId}`);
-            
-            // ========== ENVIA TODOS OS DADOS DO PERSONAGEM ==========
-            socket.emit('jogoIniciadoSucesso', {
-                id: personagem._id,
-                nome: personagem.nome,
-                sobrenome: personagem.sobrenome,
-                avatarUrl: personagem.avatarUrl,
-                // ========== INFORMAÇÕES DE MOEDA ==========
-                simboloMoeda: personagem.economia?.simboloMoeda || 'R$',
-                moeda: personagem.economia?.moedaAtual || 'BRL',
-                dinheiro: personagem.economia?.dinheiroVivo || 150,
-                energia: personagem.necessidades?.energia || 100,
-                status: 'online'
-            });
-            
-            console.log(`[THE FEED] Sessão iniciada: ${personagem.nome} ${personagem.sobrenome}`);
-            console.log(`[THE FEED] Avatar URL: ${personagem.avatarUrl}`);
-            console.log(`[THE FEED] Moeda: ${personagem.economia?.simboloMoeda} (${personagem.economia?.moedaAtual})`);
-            
-            // Avisa outros jogadores
-            socket.broadcast.emit('jogadorOnline', {
-                playerId: personagemId,
-                nome: `${personagem.nome} ${personagem.sobrenome}`
-            });
-            
-        } catch (erro) {
-            console.error(`[DEBUG] Erro fatal:`, erro);
-            socket.emit('erroServidor', "Falha interna no servidor.");
-        }
+        await iniciarSessaoPersonagem(socket, null, context, personagemId);
     });
+    
+    // Função auxiliar para iniciar sessão do personagem
+    async function iniciarSessaoPersonagem(socket, personagem = null, context, personagemId = null) {
+        let personagemFinal = personagem;
+        
+        if (!personagemFinal && personagemId) {
+            personagemFinal = await Player.findById(personagemId);
+        }
+        
+        if (!personagemFinal) {
+            return socket.emit('erroServidor', "Identidade não encontrada.");
+        }
+        
+        console.log(`[DEBUG] Iniciando sessão para: ${personagemFinal.nome}`);
+        
+        // Armazena o playerId na sessão do socket
+        context.playerIdAtual = personagemFinal._id;
+        personagemFinal.setOnline(socket.id);
+        await personagemFinal.save();
+
+        socket.join(`player_${personagemFinal._id}`);
+        
+        // ========== ENVIA TODOS OS DADOS DO PERSONAGEM ==========
+        socket.emit('jogoIniciadoSucesso', {
+            id: personagemFinal._id,
+            nome: personagemFinal.nome,
+            sobrenome: personagemFinal.sobrenome,
+            avatarUrl: personagemFinal.avatarUrl,
+            simboloMoeda: personagemFinal.economia?.simboloMoeda || 'R$',
+            moeda: personagemFinal.economia?.moedaAtual || 'BRL',
+            dinheiro: personagemFinal.economia?.dinheiroVivo || 150,
+            energia: personagemFinal.necessidades?.energia || 100,
+            status: 'online'
+        });
+        
+        console.log(`[THE FEED] Sessão iniciada: ${personagemFinal.nome} ${personagemFinal.sobrenome}`);
+        console.log(`[THE FEED] Moeda: ${personagemFinal.economia?.simboloMoeda} (${personagemFinal.economia?.moedaAtual})`);
+        
+        // Avisa outros jogadores
+        socket.broadcast.emit('jogadorOnline', {
+            playerId: personagemFinal._id,
+            nome: `${personagemFinal.nome} ${personagemFinal.sobrenome}`
+        });
+    }
 }
 
 module.exports = { configurarAuthSocket };
