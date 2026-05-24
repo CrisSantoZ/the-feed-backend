@@ -8,11 +8,14 @@ async function comerDireto(playerId, prato, preco, recuperacao) {
             return { sucesso: false, erro: 'Personagem não encontrado' };
         }
         
+        // Busca o símbolo da moeda do jogador
+        const simboloMoeda = player.economia?.simboloMoeda || 'R$';
+        
         // Verifica dinheiro
         if (player.economia.dinheiroVivo < preco) {
             return { 
                 sucesso: false, 
-                erro: `Dinheiro insuficiente. Precisa de C$${preco}, você tem C$${player.economia.dinheiroVivo}`
+                erro: `Dinheiro insuficiente. Precisa de ${simboloMoeda} ${preco}, você tem ${simboloMoeda} ${player.economia.dinheiroVivo}`
             };
         }
         
@@ -21,7 +24,6 @@ async function comerDireto(playerId, prato, preco, recuperacao) {
         
         // Aplica os efeitos nas necessidades
         if (recuperacao.fome && player.necessidades) {
-            // Recupera fome (diminui o valor)
             player.necessidades.fome = Math.max(0, player.necessidades.fome - recuperacao.fome);
         }
         
@@ -42,13 +44,18 @@ async function comerDireto(playerId, prato, preco, recuperacao) {
         
         await player.save();
         
+        console.log(`[COMIDA] ${player.nome} comeu ${prato} por ${simboloMoeda} ${preco}`);
+        console.log(`[COMIDA] Saldo restante: ${simboloMoeda} ${player.economia.dinheiroVivo}`);
+        console.log(`[COMIDA] Fome: ${player.necessidades?.fome}, Energia: ${player.necessidades?.energia}`);
+        
         return {
             sucesso: true,
             novaFome: player.necessidades?.fome,
             novaSede: player.necessidades?.sede,
             novaEnergia: player.necessidades?.energia,
             novaFelicidade: player.necessidades?.lazer,
-            saldoRestante: player.economia.dinheiroVivo
+            saldoRestante: player.economia.dinheiroVivo,
+            simboloMoeda: simboloMoeda
         };
         
     } catch (erro) {
