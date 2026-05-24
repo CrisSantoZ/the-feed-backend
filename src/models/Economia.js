@@ -90,6 +90,11 @@ const SalarioSchema = new mongoose.Schema({
 const EconomiaSchema = new mongoose.Schema({
     // ==================== DINHEIRO ====================
     dinheiroVivo: { type: Number, default: 150, min: 0 },
+    
+    // ==================== MOEDA ATUAL ====================
+    moedaAtual: { type: String, default: 'BRL' },      // Código da moeda (BRL, USD, EUR, etc.)
+    simboloMoeda: { type: String, default: 'R$' },     // Símbolo para exibição
+    
     contasBancarias: [ContaBancariaSchema],
     contaPrincipal: { type: mongoose.Schema.Types.ObjectId },
     
@@ -585,6 +590,24 @@ EconomiaSchema.methods.limitarTransacoes = function() {
     
     if (this.historicoTransacoes.length > MAX_TRANSACOES) {
         this.historicoTransacoes = this.historicoTransacoes.slice(-MAX_TRANSACOES);
+    }
+};
+
+// ==================== MÉTODO PARA ATUALIZAR MOEDA POR PAÍS ====================
+EconomiaSchema.methods.atualizarMoedaPorPais = function(paisId) {
+    try {
+        const { getMoedaPorPais } = require('../utils/moedas');
+        const moeda = getMoedaPorPais(paisId);
+        
+        if (moeda && this.moedaAtual !== moeda.codigo) {
+            console.log(`[ECONOMIA] Atualizando moeda: ${this.moedaAtual} -> ${moeda.codigo} (${moeda.simbolo})`);
+            this.moedaAtual = moeda.codigo;
+            this.simboloMoeda = moeda.simbolo;
+        }
+        return true;
+    } catch (erro) {
+        console.error('[ECONOMIA] Erro ao atualizar moeda:', erro);
+        return false;
     }
 };
 

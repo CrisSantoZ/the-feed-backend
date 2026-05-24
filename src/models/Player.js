@@ -66,8 +66,31 @@ PlayerSchema.methods.setOffline = function() {
     return this;
 };
 
+// ==================== MÉTODO: Sincronizar moeda com o país atual ====================
+PlayerSchema.methods.sincronizarMoeda = async function() {
+    try {
+        const paisAtual = this.localizacao?.paisAtual;
+        if (!paisAtual) return false;
+        
+        if (this.economia && this.economia.atualizarMoedaPorPais) {
+            const mudou = await this.economia.atualizarMoedaPorPais(paisAtual);
+            if (mudou) {
+                console.log(`[PLAYER] Moeda sincronizada para ${this.nome}: ${this.economia.simboloMoeda}`);
+                return true;
+            }
+        }
+        return false;
+    } catch (erro) {
+        console.error(`[PLAYER] Erro ao sincronizar moeda:`, erro);
+        return false;
+    }
+};
+
 // ==================== MÉTODO: Tick de atualização (chamar a cada minuto/hora) ====================
 PlayerSchema.methods.tick = async function() {
+    // Salva o país atual antes de qualquer mudança
+    const paisAntes = this.localizacao?.paisAtual;
+    
     // Atualiza necessidades
     if (this.necessidades) {
         this.necessidades.atualizar();
@@ -96,6 +119,12 @@ PlayerSchema.methods.tick = async function() {
     if (this.economia) {
         this.economia.atualizarInvestimentos();
         this.economia.calcularPatrimonioTotal();
+    }
+    
+    // ========== Sincronizar moeda se o país mudou ==========
+    const paisDepois = this.localizacao?.paisAtual;
+    if (paisAntes !== paisDepois && paisDepois) {
+        await this.sincronizarMoeda();
     }
     
     await this.save();

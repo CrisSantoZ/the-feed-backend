@@ -158,6 +158,12 @@ async function criarNovoPersonagem(dados) {
         }
     });
 
+    // ========== NOVO: ATUALIZAR MOEDA BASEADO NO PAÍS DE ORIGEM ==========
+    if (novoPlayer.economia && novoPlayer.economia.atualizarMoedaPorPais) {
+        await novoPlayer.economia.atualizarMoedaPorPais(paisOrigem);
+        console.log(`[THE FEED] Moeda inicial definida: ${novoPlayer.economia.simboloMoeda} (${novoPlayer.economia.moedaAtual})`);
+    }
+
     // 6. UPLOAD PARA CLOUDINARY
     console.log(`[THE FEED] Enviando avatar para Cloudinary: ${nome} ${sobrenome}...`);
     const avatarCloudinary = await uploadParaCloudinary(avatarUrl, novoPlayer._id, nome, sobrenome);

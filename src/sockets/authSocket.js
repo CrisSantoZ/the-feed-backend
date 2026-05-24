@@ -116,7 +116,10 @@ function configurarAuthSocket(io, socket, context) {
                 id: personagem._id,
                 nome: personagem.nome,
                 sobrenome: personagem.sobrenome,
-                avatarUrl: personagem.avatarUrl,     // ← LINHA ADICIONADA!
+                avatarUrl: personagem.avatarUrl,
+                // ========== INFORMAÇÕES DE MOEDA ==========
+                simboloMoeda: personagem.economia?.simboloMoeda || 'R$',
+                moeda: personagem.economia?.moedaAtual || 'BRL',
                 dinheiro: personagem.economia?.dinheiroVivo || 150,
                 energia: personagem.necessidades?.energia || 100,
                 status: 'online'
@@ -124,6 +127,7 @@ function configurarAuthSocket(io, socket, context) {
             
             console.log(`[THE FEED] Sessão iniciada: ${personagem.nome} ${personagem.sobrenome}`);
             console.log(`[THE FEED] Avatar URL: ${personagem.avatarUrl}`);
+            console.log(`[THE FEED] Moeda: ${personagem.economia?.simboloMoeda} (${personagem.economia?.moedaAtual})`);
             
             // Avisa outros jogadores
             socket.broadcast.emit('jogadorOnline', {
