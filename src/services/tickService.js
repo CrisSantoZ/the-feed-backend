@@ -40,7 +40,6 @@ async function processarTick(io) {
     const inicio = Date.now();
     
     try {
-        // Busca todos os jogadores online
         const jogadoresOnline = await Player.find({ online: true });
         
         if (jogadoresOnline.length === 0) {
@@ -49,7 +48,6 @@ async function processarTick(io) {
         
         console.log(`[TICK] Processando ${jogadoresOnline.length} jogadores online...`);
         
-        // Processa cada jogador
         for (const player of jogadoresOnline) {
             await processarJogador(player, io);
         }
@@ -68,6 +66,21 @@ async function processarJogador(player, io) {
         let houveMudanca = false;
         let alertas = [];
         
+        // ✅ VERIFICA SE O JOGADOR FEZ ALGUMA AÇÃO RECENTEMENTE
+        const agora = Date.now();
+        const ultimaAcao = Math.max(
+            player.necessidades?.ultimaRefeicao || 0,
+            player.necessidades?.ultimaAgua || 0,
+            player.necessidades?.ultimoSono || 0
+        );
+        
+        const tempoDesdeUltimaAcao = ultimaAcao ? (agora - new Date(ultimaAcao)) / 1000 : 999;
+        const ignorarDegradacao = tempoDesdeUltimaAcao < 10; // 10 segundos de tolerância
+        
+        if (ignorarDegradacao) {
+            console.log(`[TICK] Ignorando degradação para ${player.nome} (ação recente há ${tempoDesdeUltimaAcao}s)`);
+        }
+        
         // ==================== 1. ATUALIZA NECESSIDADES ====================
         if (player.necessidades) {
             const necessidadesAntes = {
@@ -77,23 +90,31 @@ async function processarJogador(player, io) {
                 energia: player.necessidades.energia
             };
             
-            player.necessidades.atualizar();
+            // ✅ SÓ APLICA DEGRADAÇÃO SE NÃO TIVER AÇÃO RECENTE
+            if (!ignorarDegradacao) {
+                player.necessidades.atualizar();
+            } else {
+                // Apenas atualiza saúde, não as necessidades básicas
+                console.log(`[TICK] Pulando degradação de necessidades para ${player.nome}`);
+            }
             
-            // Verifica mudanças significativas
             if (necessidadesAntes.fome !== player.necessidades.fome) houveMudanca = true;
             if (necessidadesAntes.sede !== player.necessidades.sede) houveMudanca = true;
             if (necessidadesAntes.sono !== player.necessidades.sono) houveMudanca = true;
             
-            // Alertas de necessidade
-            if (player.necessidades.fome >= 80 && necessidadesAntes.fome < 80) {
-                alertas.push({ tipo: 'fome', mensagem: '⚠️ Você está com muita fome!', nivel: player.necessidades.fome });
+            // Alertas de necessidade (só se não ignorou)
+            if (!ignorarDegradacao) {
+                if (player.necessidades.fome >= 80 && necessidadesAntes.fome < 80) {
+                    alertas.push({ tipo: 'fome', mensagem: '⚠️ Você está com muita fome!', nivel: player.necessidades.fome });
+                }
+                if (player.necessidades.sede >= 80 && necessidadesAntes.sede < 80) {
+                    alertas.push({ tipo: 'sede', mensagem: '💧 Você está com muita sede!', nivel: player.necessidades.sede });
+                }
+                if (player.necessidades.sono >= 80 && necessidadesAntes.sono < 80) {
+                    alertas.push({ tipo: 'sono', mensagem: '😴 Você está muito cansado!', nivel: player.necessidades.sono });
+                }
             }
-            if (player.necessidades.sede >= 80 && necessidadesAntes.sede < 80) {
-                alertas.push({ tipo: 'sede', mensagem: '💧 Você está com muita sede!', nivel: player.necessidades.sede });
-            }
-            if (player.necessidades.sono >= 80 && necessidadesAntes.sono < 80) {
-                alertas.push({ tipo: 'sono', mensagem: '😴 Você está muito cansado!', nivel: player.necessidades.sono });
-            }
+            
             if (player.necessidades.banheiro >= 90) {
                 alertas.push({ tipo: 'banheiro', mensagem: '🚽 Você precisa ir ao banheiro URGENTE!', nivel: player.necessidades.banheiro });
             }
@@ -104,14 +125,10 @@ async function processarJogador(player, io) {
         
         // ==================== 2. ATUALIZA SAÚDE ====================
         if (player.saude) {
-            // Processa medicamentos
             player.saude.processarMedicamentos();
-            
-            // Atualiza sinais vitais
             player.saude.atualizarSinaisVitais();
             
-            // Aplica dano por necessidades negligenciadas
-            if (player.necessidades) {
+            if (player.necessidades && !ignorarDegradacao) {
                 const dano = player.necessidades.getEfeitosNaSaude();
                 if (dano > 0) {
                     player.saude.aplicarDano('geral', 'degradacao', dano);
@@ -123,23 +140,18 @@ async function processarJogador(player, io) {
                 }
             }
             
-            // Verifica se morreu
             if (player.saude.morto && !player.saude.dataMorte) {
                 player.saude.dataMorte = new Date();
                 alertas.push({ tipo: 'morte', mensagem: `💀 VOCÊ MORREU! Causa: ${player.saude.causaMorte || 'Negligência'}` });
                 houveMudanca = true;
-                
-                // Notifica todos os amigos
                 await notificarMorte(player, io);
             }
         }
         
         // ==================== 3. ATUALIZA ECONOMIA ====================
-        if (player.economia) {
-            // Atualiza investimentos
+        if (player.economia && !ignorarDegradacao) {
             player.economia.atualizarInvestimentos();
             
-            // Processa gastos fixos (aluguel, contas)
             const gastosProcessados = await player.economia.processarGastosFixos();
             if (gastosProcessados.length > 0) {
                 alertas.push({ tipo: 'economia', mensagem: `💰 Gastos automáticos: ${gastosProcessados.join(', ')}`, nivel: player.economia.dinheiroVivo });
@@ -148,34 +160,28 @@ async function processarJogador(player, io) {
         }
         
         // ==================== 4. ATUALIZA HABILIDADES ====================
-        if (player.habilidades) {
-    // Treino diário automático
-    const treinoResultado = await player.habilidades.treinoDiario();
-    if (treinoResultado && treinoResultado.length > 0) {
-        houveMudanca = true;
-    }
-    
-    // ← ADICIONE ESTA LINHA PARA MANTER O HISTÓRICO CONTROLADO
-    if (player.habilidades.historicoProgresso.length > 50) {
-        player.habilidades.historicoProgresso = player.habilidades.historicoProgresso.slice(-50);
-    }
-}
+        if (player.habilidades && !ignorarDegradacao) {
+            const treinoResultado = await player.habilidades.treinoDiario();
+            if (treinoResultado && treinoResultado.length > 0) {
+                houveMudanca = true;
+            }
+            
+            if (player.habilidades.historicoProgresso.length > 50) {
+                player.habilidades.historicoProgresso = player.habilidades.historicoProgresso.slice(-50);
+            }
+        }
         
-               // ==================== 5. LIMITAR HISTÓRICOS (antes de salvar) ====================
-        
-        // Limitar histórico de habilidades
+        // ==================== 5. LIMITAR HISTÓRICOS ====================
         if (player.habilidades && player.habilidades.historicoProgresso && player.habilidades.historicoProgresso.length > 50) {
             player.habilidades.historicoProgresso = player.habilidades.historicoProgresso.slice(-50);
             houveMudanca = true;
         }
         
-        // Limitar históricos de necessidades
         if (player.necessidades && player.necessidades.limitarHistoricos) {
             player.necessidades.limitarHistoricos();
             houveMudanca = true;
         }
         
-        // Limitar transações da economia
         if (player.economia && player.economia.limitarTransacoes) {
             player.economia.limitarTransacoes();
             houveMudanca = true;
@@ -185,7 +191,6 @@ async function processarJogador(player, io) {
         if (houveMudanca) {
             await player.save();
             
-            // Envia atualização para o jogador
             if (player.socketId && io.sockets.sockets.get(player.socketId)) {
                 io.to(player.socketId).emit('tickAtualizacao', {
                     necessidades: player.necessidades ? {
@@ -212,12 +217,10 @@ async function processarJogador(player, io) {
             }
         }
         
-        // Envia alertas mesmo sem mudanças
         if (alertas.length > 0 && player.socketId) {
             io.to(player.socketId).emit('alertas', { alertas: alertas });
         }
         
-        // Se morreu, desconecta
         if (player.saude && player.saude.morto) {
             if (player.socketId) {
                 io.to(player.socketId).emit('gameOver', {
@@ -225,7 +228,6 @@ async function processarJogador(player, io) {
                     data: player.saude.dataMorte
                 });
                 
-                // Desconecta após 5 segundos
                 setTimeout(() => {
                     const socket = io.sockets.sockets.get(player.socketId);
                     if (socket) {
@@ -240,7 +242,6 @@ async function processarJogador(player, io) {
     }
 }
 
-// Notificar amigos sobre a morte
 async function notificarMorte(player, io) {
     try {
         if (!player.social || !player.social.amigos) return;
@@ -260,7 +261,6 @@ async function notificarMorte(player, io) {
     }
 }
 
-// Tick manual para um jogador específico (para testes)
 async function tickManual(playerId) {
     try {
         const player = await Player.findById(playerId);
@@ -275,7 +275,6 @@ async function tickManual(playerId) {
     }
 }
 
-// Status do tick service
 function getTickStatus() {
     return {
         ativo: tickInterval !== null,
