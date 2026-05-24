@@ -18,54 +18,67 @@ function configurarAuthSocket(io, socket, context) {
 
     // Login (agora suporta reconexão por playerId)
     socket.on('entrarNoJogo', async (dadosLogin) => {
-        try {
-            let conta;
+    try {
+        let conta;
+        
+        // Reconexão por playerId
+        if (dadosLogin.playerId) {
+            console.log(`[AUTH] Reconexão para playerId: ${dadosLogin.playerId}`);
             
-            // ========== NOVO: RECONEXÃO POR PLAYER ID ==========
-            if (dadosLogin.playerId) {
-                console.log(`[AUTH] Tentando reconexão para playerId: ${dadosLogin.playerId}`);
-                
-                const player = await Player.findById(dadosLogin.playerId).populate('accountId');
-                
-                if (!player) {
-                    return socket.emit('erroServidor', "Personagem não encontrado para reconexão.");
-                }
-                
-                // Busca a conta do jogador
-                const account = await Account.findById(player.accountId).populate('personagens');
-                
-                if (!account) {
-                    return socket.emit('erroServidor', "Conta não encontrada.");
-                }
-                
-                // Marca o personagem como online
-                player.setOnline(socket.id);
-                await player.save();
-                
-                // Prepara a resposta com o personagem selecionado
-                conta = account.toObject();
-                delete conta.senha;
-                
-                // Emite sucesso e já inicia a sessão
-                socket.emit('loginSucesso', conta);
-                
-                // Inicia a sessão do jogo automaticamente
-                await iniciarSessaoPersonagem(socket, player, context);
-                
-                console.log(`[THE FEED] Reconexão bem-sucedida: ${player.nome} ${player.sobrenome}`);
-                return;
+            const player = await Player.findById(dadosLogin.playerId).populate('accountId');
+            
+            if (!player) {
+                return socket.emit('erroServidor', "Personagem não encontrado.");
             }
             
-            // ========== LOGIN NORMAL (usuário/senha) ==========
-            conta = await authController.autenticarCidadao(dadosLogin);
-            socket.emit('loginSucesso', conta);
-            console.log(`[THE FEED] Conta @${conta.username} acessou. Personagens: ${conta.personagens.length}`);
+            const account = await Account.findById(player.accountId).populate('personagens');
             
-        } catch (erro) {
-            console.error(`[THE FEED] Falha na conexão: ${erro.message}`);
-            socket.emit('erroServidor', erro.message);
+            if (!account) {
+                return socket.emit('erroServidor', "Conta não encontrada.");
+            }
+            
+            // Marca como online
+            player.setOnline(socket.id);
+            await player.save();
+            
+            // ========== PULA A TELA DE SELEÇÃO ==========
+            // Inicia a sessão do jogo diretamente
+            socket.join(`player_${player._id}`);
+            
+            socket.emit('jogoIniciadoSucesso', {
+                id: player._id,
+                nome: player.nome,
+                sobrenome: player.sobrenome,
+                avatarUrl: player.avatarUrl,
+                simboloMoeda: player.economia?.simboloMoeda || 'R$',
+                moeda: player.economia?.moedaAtual || 'BRL',
+                dinheiro: player.economia?.dinheiroVivo || 150,
+                energia: player.necessidades?.energia || 100,
+                pais: player.localizacao?.paisAtual || 'Brasil',
+                estado: player.localizacao?.estadoAtual || 'São Paulo',
+                cidade: player.localizacao?.cidadeAtual || 'São Paulo',
+                status: 'online'
+            });
+            
+            socket.broadcast.emit('jogadorOnline', {
+                playerId: player._id,
+                nome: `${player.nome} ${player.sobrenome}`
+            });
+            
+            console.log(`[AUTH] Reconexão bem-sucedida: ${player.nome}`);
+            return;
         }
-    });
+        
+        // Login normal (usuário/senha)
+        conta = await authController.autenticarCidadao(dadosLogin);
+        socket.emit('loginSucesso', conta);
+        console.log(`[THE FEED] Conta @${conta.username} acessou. Personagens: ${conta.personagens.length}`);
+        
+    } catch (erro) {
+        console.error(`[THE FEED] Falha na conexão: ${erro.message}`);
+        socket.emit('erroServidor', erro.message);
+    }
+});
 
     // Finalizar criação de personagem
     socket.on('finalizarCriacaoPersonagem', async (dadosNovoPersonagem) => {
