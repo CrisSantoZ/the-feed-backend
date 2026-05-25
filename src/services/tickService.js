@@ -68,6 +68,11 @@ async function processarJogador(player, io) {
         
         // ✅ VERIFICA SE O JOGADOR FEZ ALGUMA AÇÃO RECENTEMENTE
         const agora = Date.now();
+        
+        // ✅ NOVO: VERIFICA SE JOGADOR ACABOU DE LOGAR
+        const tempoDesdeUltimoLogin = player.ultimoLogin ? (agora - new Date(player.ultimoLogin)) / 1000 : 999;
+        const isRecemLogado = tempoDesdeUltimoLogin < 30; // 30 segundos de tolerância
+        
         const ultimaAcao = Math.max(
             player.necessidades?.ultimaRefeicao || 0,
             player.necessidades?.ultimaAgua || 0,
@@ -75,10 +80,11 @@ async function processarJogador(player, io) {
         );
         
         const tempoDesdeUltimaAcao = ultimaAcao ? (agora - new Date(ultimaAcao)) / 1000 : 999;
-        const ignorarDegradacao = tempoDesdeUltimaAcao < 10; // 10 segundos de tolerância
+        const ignorarDegradacao = (tempoDesdeUltimaAcao < 10) || isRecemLogado;
         
         if (ignorarDegradacao) {
-            console.log(`[TICK] Ignorando degradação para ${player.nome} (ação recente há ${tempoDesdeUltimaAcao}s)`);
+            const motivo = isRecemLogado ? `recém logado (${tempoDesdeUltimoLogin}s)` : `ação recente (${tempoDesdeUltimaAcao}s)`;
+            console.log(`[TICK] Ignorando degradação para ${player.nome} (${motivo})`);
         }
         
         // ==================== 1. ATUALIZA NECESSIDADES ====================
@@ -90,11 +96,10 @@ async function processarJogador(player, io) {
                 energia: player.necessidades.energia
             };
             
-            // ✅ SÓ APLICA DEGRADAÇÃO SE NÃO TIVER AÇÃO RECENTE
+            // ✅ SÓ APLICA DEGRADAÇÃO SE NÃO TIVER AÇÃO RECENTE E NÃO FOR RECÉM LOGADO
             if (!ignorarDegradacao) {
                 player.necessidades.atualizar();
             } else {
-                // Apenas atualiza saúde, não as necessidades básicas
                 console.log(`[TICK] Pulando degradação de necessidades para ${player.nome}`);
             }
             
