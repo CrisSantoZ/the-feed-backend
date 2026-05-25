@@ -26,34 +26,9 @@ async function processarTempoOffline(playerId) {
         const eventos = [];
         
         // ==================== 1. ATUALIZA NECESSIDADES ====================
-        if (player.necessidades) {
-            const fomeAntes = player.necessidades.fome;
-            const sedeAntes = player.necessidades.sede;
-            const sonoAntes = player.necessidades.sono;
-            
-            // Fome aumenta 2% por hora
-            player.necessidades.fome = Math.min(100, player.necessidades.fome + (horasOffline * 2));
-            
-            // Sede aumenta 3% por hora
-            player.necessidades.sede = Math.min(100, player.necessidades.sede + (horasOffline * 3));
-            
-            // Sono aumenta 4% por hora
-            player.necessidades.sono = Math.min(100, player.necessidades.sono + (horasOffline * 4));
-            
-            // Higiene diminui 2% por hora
-            player.necessidades.higiene = Math.max(0, player.necessidades.higiene - (horasOffline * 2));
-            
-            // Social diminui 1% por hora
-            player.necessidades.social = Math.max(0, player.necessidades.social - (horasOffline * 1));
-            
-            // Lazer diminui 1% por hora
-            player.necessidades.lazer = Math.max(0, player.necessidades.lazer - (horasOffline * 1));
-            
-            // Banheiro aumenta 10% por hora
-            player.necessidades.banheiro = Math.min(100, player.necessidades.banheiro + (horasOffline * 10));
-            
-            eventos.push(`⏰ ${horasOffline}h offline: Fome +${player.necessidades.fome - fomeAntes}%, Sede +${player.necessidades.sede - sedeAntes}%, Sono +${player.necessidades.sono - sonoAntes}%`);
-        }
+        // ✅ REMOVIDO - DEGRADAÇÃO OFFLINE CAUSA PULOS NOS VALORES
+        // Agora as necessidades só são afetadas ONLINE pelo tickService
+        // O jogador volta exatamente como estava quando saiu
         
         // ==================== 2. RECUPERA ENERGIA (se estiver em casa) ====================
         if (player.localizacao && player.localizacao.residencia && player.localizacao.residencia.endereco) {
@@ -76,7 +51,7 @@ async function processarTempoOffline(playerId) {
         if (player.saude && player.necessidades) {
             const saudeAntes = player.saude.geral;
             
-            // Dano por necessidades negligenciadas
+            // Dano por necessidades negligenciadas (apenas se extremamente altas)
             const danoPorHora = player.necessidades.getEfeitosNaSaude();
             const danoTotal = danoPorHora * horasOffline;
             
