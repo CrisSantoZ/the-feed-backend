@@ -284,12 +284,8 @@ NecessidadesSchema.methods.atualizar = function () {
     const horasDesdeUltimoLazer = (agora - this.ultimoLazer) / (1000 * 60 * 60);
 
     // NOVAS TAXAS (para compensar o bug)
-    if (horasDesdeUltimaRefeicao > 0) {
-        this.fome = Math.min(100, this.fome + (horasDesdeUltimaRefeicao * 0.07));  // 4.2%/hora
-    }
-
-    if (horasDesdeUltimaAgua > 0) {
-        this.sede = Math.min(100, this.sede + (horasDesdeUltimaAgua * 0.083));  // 5%/hora
+    this.fome = Math.min(100, this.fome + (horasDesdeUltimaRefeicao * 0.42));  // 25%/hora
+this.sede = Math.min(100, this.sede + (horasDesdeUltimaAgua * 0.5));       // 30%/hora
     }
 
     if (horasDesdeUltimoSono > 0 && !this.estado.desmaiadoPorExaustao) {
