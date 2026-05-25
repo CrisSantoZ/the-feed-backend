@@ -285,49 +285,50 @@ NecessidadesSchema.methods.atualizar = function () {
     const horasDesdeUltimoSocial = (agora - this.ultimoSocial) / (1000 * 60 * 60);
     const horasDesdeUltimoLazer = (agora - this.ultimoLazer) / (1000 * 60 * 60);
 
-if (horasDesdeUltimaRefeicao > 0) {
-    this.fome = Math.min(100, this.fome + (horasDesdeUltimaRefeicao * 0.0695));  // 4.17%/hora
-}
+    // ✅ LOGS DE DEBUG
+    console.log(`[NECESSIDADES] ===== ATUALIZANDO =====`);
+    console.log(`[NECESSIDADES] horasDesdeUltimoSono: ${horasDesdeUltimoSono}`);
+    console.log(`[NECESSIDADES] sono ANTES: ${this.sono}`);
+    console.log(`[NECESSIDADES] estado.desmaiado: ${this.estado.desmaiadoPorExaustao}`);
 
-if (horasDesdeUltimaAgua > 0) {
-    this.sede = Math.min(100, this.sede + (horasDesdeUltimaAgua * 0.0695));  // 4.17%/hora
-}
-
-if (horasDesdeUltimoSono > 0 && !this.estado.desmaiadoPorExaustao) {
-    this.sono = Math.min(100, this.sono + (horasDesdeUltimoSono * 50));  // 3000%/hora (TESTE)
-}
-
-if (horasDesdeUltimoBanheiro > 0) {
-    this.banheiro = Math.min(100, this.banheiro + (horasDesdeUltimoBanheiro * 8));
-}
-
-if (horasDesdeUltimoBanho > 0) {
-    this.higiene = Math.max(0, this.higiene - (horasDesdeUltimoBanho * 1.5));
-}
-
-if (horasDesdeUltimoSocial > 0 && !this.estado.desmaiadoPorExaustao) {
-    this.social = Math.max(0, this.social - (horasDesdeUltimoSocial * 1));
-}
-
-if (horasDesdeUltimoLazer > 0 && !this.estado.desmaiadoPorExaustao) {
-    this.lazer = Math.max(0, this.lazer - (horasDesdeUltimoLazer * 1));
-}
-
-this.energia = Math.max(0, 100 - this.sono);
-
-this.intimidade = Math.min(100, this.intimidade + 0.5);
-
-    if (this.fome >= 90) {
-        this.estado.desmaiadoPorExaustao = true;
+    if (horasDesdeUltimaRefeicao > 0) {
+        this.fome = Math.min(100, this.fome + (horasDesdeUltimaRefeicao * 0.0695));
     }
 
-    if (this.sede >= 90) {
-        this.estado.desmaiadoPorExaustao = true;
+    if (horasDesdeUltimaAgua > 0) {
+        this.sede = Math.min(100, this.sede + (horasDesdeUltimaAgua * 0.0695));
     }
 
-    if (this.sono >= 95 && !this.estado.desmaiadoPorExaustao) {
-        this.estado.desmaiadoPorExaustao = true;
+    if (horasDesdeUltimoSono > 0 && !this.estado.desmaiadoPorExaustao) {
+        console.log(`[NECESSIDADES] AUMENTANDO SONO!`);
+        this.sono = Math.min(100, this.sono + (horasDesdeUltimoSono * 50));
+        console.log(`[NECESSIDADES] sono DEPOIS: ${this.sono}`);
+    } else {
+        console.log(`[NECESSIDADES] SONO NÃO AUMENTADO. Motivo: horasDesdeUltimoSono > 0? ${horasDesdeUltimoSono > 0}, desmaiado? ${this.estado.desmaiadoPorExaustao}`);
     }
+
+    if (horasDesdeUltimoBanheiro > 0) {
+        this.banheiro = Math.min(100, this.banheiro + (horasDesdeUltimoBanheiro * 8));
+    }
+
+    if (horasDesdeUltimoBanho > 0) {
+        this.higiene = Math.max(0, this.higiene - (horasDesdeUltimoBanho * 1.5));
+    }
+
+    if (horasDesdeUltimoSocial > 0 && !this.estado.desmaiadoPorExaustao) {
+        this.social = Math.max(0, this.social - (horasDesdeUltimoSocial * 1));
+    }
+
+    if (horasDesdeUltimoLazer > 0 && !this.estado.desmaiadoPorExaustao) {
+        this.lazer = Math.max(0, this.lazer - (horasDesdeUltimoLazer * 1));
+    }
+
+    this.energia = Math.max(0, 100 - this.sono);
+    this.intimidade = Math.min(100, this.intimidade + 0.5);
+
+    if (this.fome >= 90) this.estado.desmaiadoPorExaustao = true;
+    if (this.sede >= 90) this.estado.desmaiadoPorExaustao = true;
+    if (this.sono >= 95 && !this.estado.desmaiadoPorExaustao) this.estado.desmaiadoPorExaustao = true;
 
     if (this.banheiro >= 95) {
         this.higiene = Math.max(0, this.higiene - 50);
@@ -335,9 +336,7 @@ this.intimidade = Math.min(100, this.intimidade + 0.5);
         this.banheiro = 50;
     }
 
-    if (this.social < 20 || this.lazer < 20) {
-        this.estado.deprimido = true;
-    }
+    if (this.social < 20 || this.lazer < 20) this.estado.deprimido = true;
 
     if (this.estado.intoxicado && this.estado.intoxicacaoGravidade > 10) {
         this.estado.vomitou = true;
