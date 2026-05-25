@@ -27,73 +27,73 @@ const HigieneRepentinaSchema = new mongoose.Schema({
 
 const NecessidadesSchema = new mongoose.Schema({
     // ==================== NECESSIDADES BÁSICAS ====================
-    fome: { 
-        type: Number, 
-        default: 0, 
-        min: 0, 
+    fome: {
+        type: Number,
+        default: 0,
+        min: 0,
         max: 100,
         description: "0=cheio, 50=com fome, 80=faminto, 100=passando fome"
     },
-    
-    sede: { 
-        type: Number, 
-        default: 0, 
-        min: 0, 
+
+    sede: {
+        type: Number,
+        default: 0,
+        min: 0,
         max: 100,
         description: "0=hidratado, 50=com sede, 80=desidratado, 100=desidratação severa"
     },
-    
-    sono: { 
-        type: Number, 
-        default: 0, 
-        min: 0, 
+
+    sono: {
+        type: Number,
+        default: 0,
+        min: 0,
         max: 100,
         description: "0=descansado, 50=cansado, 80=exausto, 100=colapso"
     },
-    
+
     // ✅ ENERGIA ADICIONADA AQUI
-    energia: { 
-        type: Number, 
-        default: 100, 
-        min: 0, 
+    energia: {
+        type: Number,
+        default: 100,
+        min: 0,
         max: 100,
         description: "0=exausto, 100=cheio de energia"
     },
-    
+
     // ==================== NECESSIDADES SOCIAIS ====================
-    social: { 
-        type: Number, 
-        default: 70, 
-        min: 0, 
+    social: {
+        type: Number,
+        default: 70,
+        min: 0,
         max: 100,
         description: "0=solitário/depressivo, 70=normal, 100=feliz rodeado"
     },
-    
-    lazer: { 
-        type: Number, 
-        default: 70, 
-        min: 0, 
+
+    lazer: {
+        type: Number,
+        default: 70,
+        min: 0,
         max: 100,
         description: "0=entediado/depressivo, 70=normal, 100=muito feliz"
     },
-    
+
     // ==================== NECESSIDADES BIOLÓGICAS ====================
-    banheiro: { 
-        type: Number, 
-        default: 0, 
-        min: 0, 
+    banheiro: {
+        type: Number,
+        default: 0,
+        min: 0,
         max: 100,
         description: "0=vazio, 50=quer ir, 80=urgente, 100=acidente"
     },
-    
-    higiene: { 
-        type: Number, 
-        default: 100, 
-        min: 0, 
+
+    higiene: {
+        type: Number,
+        default: 100,
+        min: 0,
         max: 100,
         description: "0=imundo/cheiro ruim, 50=precisa de banho, 100=limpo"
     },
-    
+
     // ==================== NECESSIDADES SECUNDÁRIAS ====================
     intimidade: {
         type: Number,
@@ -102,7 +102,7 @@ const NecessidadesSchema = new mongoose.Schema({
         max: 100,
         description: "0=normal, 50=desejo, 100=necessidade extrema"
     },
-    
+
     seguranca: {
         type: Number,
         default: 50,
@@ -110,7 +110,7 @@ const NecessidadesSchema = new mongoose.Schema({
         max: 100,
         description: "0=tranquilo, 50=normal, 100=paranoico/inseguro"
     },
-    
+
     // ==================== HISTÓRICO ====================
     ultimaRefeicao: { type: Date, default: Date.now },
     ultimaAgua: { type: Date, default: Date.now },
@@ -119,22 +119,22 @@ const NecessidadesSchema = new mongoose.Schema({
     ultimoSocial: { type: Date, default: Date.now },
     ultimoLazer: { type: Date, default: Date.now },
     ultimoBanheiro: { type: Date, default: Date.now },
-    
+
     historicoRefeicoes: [HistoricoRefeicaoSchema],
     historicoSono: [SonaRepousoSchema],
     historicoHigiene: [HigieneRepentinaSchema],
-    
+
     caloriasConsumidasHoje: { type: Number, default: 0 },
     aguaConsumidaHoje: { type: Number, default: 0 },
     passosDia: { type: Number, default: 0 },
-    
+
     estado: {
         desmaiadoPorExaustao: { type: Boolean, default: false },
         vomitou: { type: Boolean, default: false },
         intoxicado: { type: Boolean, default: false },
         intoxicacaoGravidade: { type: Number, default: 0 }
     },
-    
+
     preferencias: {
         comidaFavorita: String,
         comidaOdiada: String,
@@ -143,57 +143,57 @@ const NecessidadesSchema = new mongoose.Schema({
         vegano: { type: Boolean, default: false },
         alergias: [String]
     },
-    
+
     ultimoResetDiario: { type: Date, default: Date.now }
 });
 
 // ==================== MÉTODOS ====================
 
-NecessidadesSchema.methods.comer = function(comida, calorias, qualidade = 50) {
+NecessidadesSchema.methods.comer = function (comida, calorias, qualidade = 50) {
     const reducao = Math.min(100, calorias / 20);
     this.fome = Math.max(0, this.fome - reducao);
-    
+
     if (this.fome > 80 && calorias > 500) {
         this.estado.vomitou = true;
     }
-    
+
     this.historicoRefeicoes.push({
         tipo: this.definirTipoRefeicao(),
         alimentos: [comida],
         calorias: calorias,
         data: new Date()
     });
-    
+
     this.caloriasConsumidasHoje += calorias;
     this.ultimaRefeicao = new Date();
-    
+
     if (this.preferencias.vegetariano && comida.includes('carne')) {
         this.estado.vomitou = true;
         this.fome = Math.min(100, this.fome + 20);
         return { sucesso: false, motivo: "Você é vegetariano!" };
     }
-    
+
     return { sucesso: true, fomeRestante: this.fome };
 };
 
-NecessidadesSchema.methods.beber = function(quantidadeML, bebida = 'agua') {
+NecessidadesSchema.methods.beber = function (quantidadeML, bebida = 'agua') {
     const reducao = quantidadeML / 50;
     this.sede = Math.max(0, this.sede - reducao);
     this.aguaConsumidaHoje += quantidadeML;
     this.ultimaAgua = new Date();
-    
+
     if (bebida !== 'agua') {
         this.estado.intoxicado = true;
         this.estado.intoxicacaoGravidade += quantidadeML / 100;
     }
-    
+
     return { sucesso: true, sedeRestante: this.sede };
 };
 
-NecessidadesSchema.methods.dormir = function(horas, qualidade = 70) {
+NecessidadesSchema.methods.dormir = function (horas, qualidade = 70) {
     const reducao = horas * 8;
     this.sono = Math.max(0, this.sono - reducao);
-    
+
     this.historicoSono.push({
         inicio: new Date(Date.now() - (horas * 60 * 60 * 1000)),
         fim: new Date(),
@@ -202,54 +202,54 @@ NecessidadesSchema.methods.dormir = function(horas, qualidade = 70) {
         pesadelo: qualidade < 30,
         local: this.localAtual || 'desconhecido'
     });
-    
+
     this.ultimoSono = new Date();
     this.social = Math.min(100, this.social + (horas * 2));
     this.lazer = Math.min(100, this.lazer + (horas * 1));
     this.banheiro = Math.min(100, this.banheiro + 30);
-    
+
     return { sucesso: true, sonoRestante: this.sono };
 };
 
-NecessidadesSchema.methods.usarBanheiro = function() {
+NecessidadesSchema.methods.usarBanheiro = function () {
     this.banheiro = 0;
     this.ultimoBanheiro = new Date();
     return true;
 };
 
-NecessidadesSchema.methods.tomarBanho = function() {
+NecessidadesSchema.methods.tomarBanho = function () {
     this.higiene = 100;
     this.ultimoBanho = new Date();
-    
+
     this.historicoHigiene.push({
         tipo: 'banho',
         data: new Date()
     });
-    
+
     this.social = Math.min(100, this.social + 5);
     return true;
 };
 
-NecessidadesSchema.methods.interagirSocial = function(tipo, duracaoMinutos) {
+NecessidadesSchema.methods.interagirSocial = function (tipo, duracaoMinutos) {
     let ganho = duracaoMinutos / 5;
-    
-    switch(tipo) {
+
+    switch (tipo) {
         case 'conversa': ganho *= 0.8; break;
         case 'festa': ganho *= 1.5; break;
         case 'encontro': ganho *= 2; break;
         case 'trabalho': ganho *= 0.3; break;
         default: ganho *= 1;
     }
-    
+
     this.social = Math.min(100, this.social + ganho);
     this.ultimoSocial = new Date();
-    
+
     return { sucesso: true, socialAtual: this.social };
 };
 
-NecessidadesSchema.methods.seDivertir = function(atividade, duracaoMinutos) {
+NecessidadesSchema.methods.seDivertir = function (atividade, duracaoMinutos) {
     let ganho = duracaoMinutos / 4;
-    
+
     const multiplicadores = {
         'jogar': 1,
         'netflix': 0.8,
@@ -258,22 +258,22 @@ NecessidadesSchema.methods.seDivertir = function(atividade, duracaoMinutos) {
         'natureza': 1.5,
         'leitura': 0.6
     };
-    
+
     ganho *= (multiplicadores[atividade] || 1);
     this.lazer = Math.min(100, this.lazer + ganho);
     this.ultimoLazer = new Date();
-    
+
     return { sucesso: true, lazerAtual: this.lazer };
 };
 
-NecessidadesSchema.methods.satisfazerIntimidade = function() {
+NecessidadesSchema.methods.satisfazerIntimidade = function () {
     this.intimidade = 0;
     this.social = Math.min(100, this.social + 20);
     this.lazer = Math.min(100, this.lazer + 15);
     return true;
 };
 
-NecessidadesSchema.methods.atualizar = function() {
+NecessidadesSchema.methods.atualizar = function () {
     const agora = new Date();
     const horasDesdeUltimaRefeicao = (agora - this.ultimaRefeicao) / (1000 * 60 * 60);
     const horasDesdeUltimaAgua = (agora - this.ultimaAgua) / (1000 * 60 * 60);
@@ -282,78 +282,79 @@ NecessidadesSchema.methods.atualizar = function() {
     const horasDesdeUltimoBanho = (agora - this.ultimoBanho) / (1000 * 60 * 60);
     const horasDesdeUltimoSocial = (agora - this.ultimoSocial) / (1000 * 60 * 60);
     const horasDesdeUltimoLazer = (agora - this.ultimoLazer) / (1000 * 60 * 60);
-    
+
+    // NOVAS TAXAS (para compensar o bug)
     if (horasDesdeUltimaRefeicao > 0) {
-        this.fome = Math.min(100, this.fome + (horasDesdeUltimaRefeicao * 4));
+        this.fome = Math.min(100, this.fome + (horasDesdeUltimaRefeicao * 1.1));  // 4 / 3.6
     }
-    
+
     if (horasDesdeUltimaAgua > 0) {
-        this.sede = Math.min(100, this.sede + (horasDesdeUltimaAgua * 5));
+        this.sede = Math.min(100, this.sede + (horasDesdeUltimaAgua * 1.4));  // 5 / 3.6
     }
-    
+
     if (horasDesdeUltimoSono > 0 && !this.estado.desmaiadoPorExaustao) {
-        this.sono = Math.min(100, this.sono + (horasDesdeUltimoSono * 6));
+        this.sono = Math.min(100, this.sono + (horasDesdeUltimoSono * 1.7));  // 6 / 3.6
     }
-    
+
     if (horasDesdeUltimoBanheiro > 0) {
         this.banheiro = Math.min(100, this.banheiro + (horasDesdeUltimoBanheiro * 8));
     }
-    
+
     if (horasDesdeUltimoBanho > 0) {
         this.higiene = Math.max(0, this.higiene - (horasDesdeUltimoBanho * 1.5));
     }
-    
+
     if (horasDesdeUltimoSocial > 0 && !this.estado.desmaiadoPorExaustao) {
         this.social = Math.max(0, this.social - (horasDesdeUltimoSocial * 1));
     }
-    
+
     if (horasDesdeUltimoLazer > 0 && !this.estado.desmaiadoPorExaustao) {
         this.lazer = Math.max(0, this.lazer - (horasDesdeUltimoLazer * 1));
     }
-    
+
     this.intimidade = Math.min(100, this.intimidade + 0.5);
-    
+
     if (this.fome >= 90) {
         this.estado.desmaiadoPorExaustao = true;
     }
-    
+
     if (this.sede >= 90) {
         this.estado.desmaiadoPorExaustao = true;
     }
-    
+
     if (this.sono >= 95 && !this.estado.desmaiadoPorExaustao) {
         this.estado.desmaiadoPorExaustao = true;
     }
-    
+
     if (this.banheiro >= 95) {
         this.higiene = Math.max(0, this.higiene - 50);
         this.social = Math.max(0, this.social - 20);
         this.banheiro = 50;
     }
-    
+
     if (this.social < 20 || this.lazer < 20) {
         this.estado.deprimido = true;
     }
-    
+
     if (this.estado.intoxicado && this.estado.intoxicacaoGravidade > 10) {
         this.estado.vomitou = true;
         this.estado.intoxicacaoGravidade -= 2;
         this.sede += 10;
         this.fome += 5;
     }
-    
+
     this.verificarResetDiario();
     return this;
 };
 
-NecessidadesSchema.methods.verificarResetDiario = function() {
+NecessidadesSchema.methods.verificarResetDiario = function () {
     const agora = new Date();
     const ultimoReset = this.ultimoResetDiario;
-    
-    if (agora.getDate() !== ultimoReset.getDate() || 
+
+    if (agora.getDate() !== ultimoReset.getDate() ||
         agora.getMonth() !== ultimoReset.getMonth() ||
         agora.getFullYear() !== ultimoReset.getFullYear()) {
-        
+
         this.caloriasConsumidasHoje = 0;
         this.aguaConsumidaHoje = 0;
         this.passosDia = 0;
@@ -363,7 +364,7 @@ NecessidadesSchema.methods.verificarResetDiario = function() {
     }
 };
 
-NecessidadesSchema.methods.getEfeitosNaSaude = function() {
+NecessidadesSchema.methods.getEfeitosNaSaude = function () {
     let dano = 0;
     if (this.fome > 80) dano += 2;
     if (this.sede > 80) dano += 3;
@@ -374,17 +375,17 @@ NecessidadesSchema.methods.getEfeitosNaSaude = function() {
     return dano;
 };
 
-NecessidadesSchema.methods.limitarHistoricos = function() {
+NecessidadesSchema.methods.limitarHistoricos = function () {
     const MAX_HISTORICO = 20;
-    
+
     if (this.historicoRefeicoes.length > MAX_HISTORICO) {
         this.historicoRefeicoes = this.historicoRefeicoes.slice(-MAX_HISTORICO);
     }
-    
+
     if (this.historicoSono.length > MAX_HISTORICO) {
         this.historicoSono = this.historicoSono.slice(-MAX_HISTORICO);
     }
-    
+
     if (this.historicoHigiene.length > MAX_HISTORICO) {
         this.historicoHigiene = this.historicoHigiene.slice(-MAX_HISTORICO);
     }
