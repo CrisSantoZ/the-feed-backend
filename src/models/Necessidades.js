@@ -193,6 +193,9 @@ NecessidadesSchema.methods.beber = function (quantidadeML, bebida = 'agua') {
 NecessidadesSchema.methods.dormir = function (horas, qualidade = 70) {
     const reducao = horas * 8;
     this.sono = Math.max(0, this.sono - reducao);
+    
+    // ✅ RECUPERA ENERGIA AO DORMIR
+    this.energia = Math.min(100, this.energia + (horas * 10));
 
     this.historicoSono.push({
         inicio: new Date(Date.now() - (horas * 60 * 60 * 1000)),
@@ -210,7 +213,6 @@ NecessidadesSchema.methods.dormir = function (horas, qualidade = 70) {
 
     return { sucesso: true, sonoRestante: this.sono };
 };
-
 NecessidadesSchema.methods.usarBanheiro = function () {
     this.banheiro = 0;
     this.ultimoBanheiro = new Date();
@@ -283,7 +285,6 @@ NecessidadesSchema.methods.atualizar = function () {
     const horasDesdeUltimoSocial = (agora - this.ultimoSocial) / (1000 * 60 * 60);
     const horasDesdeUltimoLazer = (agora - this.ultimoLazer) / (1000 * 60 * 60);
 
-    // TAXAS PARA 24 HORAS (4.17% por hora)
 if (horasDesdeUltimaRefeicao > 0) {
     this.fome = Math.min(100, this.fome + (horasDesdeUltimaRefeicao * 0.0695));  // 4.17%/hora
 }
@@ -296,7 +297,6 @@ if (horasDesdeUltimoSono > 0 && !this.estado.desmaiadoPorExaustao) {
     this.sono = Math.min(100, this.sono + (horasDesdeUltimoSono * 0.0695));  // 4.17%/hora
 }
 
-// MANTÉM AS DEMAIS TAXAS IGUAL
 if (horasDesdeUltimoBanheiro > 0) {
     this.banheiro = Math.min(100, this.banheiro + (horasDesdeUltimoBanheiro * 8));
 }
@@ -313,7 +313,9 @@ if (horasDesdeUltimoLazer > 0 && !this.estado.desmaiadoPorExaustao) {
     this.lazer = Math.max(0, this.lazer - (horasDesdeUltimoLazer * 1));
 }
 
-    this.intimidade = Math.min(100, this.intimidade + 0.5);
+this.energia = Math.max(0, 100 - this.sono);
+
+this.intimidade = Math.min(100, this.intimidade + 0.5);
 
     if (this.fome >= 90) {
         this.estado.desmaiadoPorExaustao = true;
