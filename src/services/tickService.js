@@ -63,10 +63,12 @@ async function processarTick(io) {
 // Processar um jogador individual
 async function processarJogador(player, io) {
     try {
-
-console.log(`[TICK] Player: ${player.nome}`);
-        console.log(`[TICK] socketId salvo: ${player.socketId}`);
-        console.log(`[TICK] Socket existe? ${io.sockets.sockets.get(player.socketId) ? 'SIM' : 'NÃO'}`);
+        // ✅ BUSCA O PLAYER ATUALIZADO (com socketId mais recente)
+        const playerAtualizado = await Player.findById(player._id);
+        
+        console.log(`[TICK] Player: ${playerAtualizado.nome}`);
+        console.log(`[TICK] socketId salvo: ${playerAtualizado.socketId}`);
+        console.log(`[TICK] Socket existe? ${io.sockets.sockets.get(playerAtualizado.socketId) ? 'SIM' : 'NÃO'}`);
 
         let houveMudanca = false;
         let alertas = [];
@@ -75,13 +77,13 @@ console.log(`[TICK] Player: ${player.nome}`);
         const agora = Date.now();
         
         // ✅ NOVO: VERIFICA SE JOGADOR ACABOU DE LOGAR
-        const tempoDesdeUltimoLogin = player.ultimoLogin ? (agora - new Date(player.ultimoLogin)) / 1000 : 999;
+        const tempoDesdeUltimoLogin = playerAtualizado.ultimoLogin ? (agora - new Date(playerAtualizado.ultimoLogin)) / 1000 : 999;
         const isRecemLogado = tempoDesdeUltimoLogin < 30; // 30 segundos de tolerância
         
         const ultimaAcao = Math.max(
-            player.necessidades?.ultimaRefeicao || 0,
-            player.necessidades?.ultimaAgua || 0,
-            player.necessidades?.ultimoSono || 0
+            playerAtualizado.necessidades?.ultimaRefeicao || 0,
+            playerAtualizado.necessidades?.ultimaAgua || 0,
+            playerAtualizado.necessidades?.ultimoSono || 0
         );
         
         const tempoDesdeUltimaAcao = ultimaAcao ? (agora - new Date(ultimaAcao)) / 1000 : 999;
@@ -89,157 +91,160 @@ console.log(`[TICK] Player: ${player.nome}`);
         
         if (ignorarDegradacao) {
             const motivo = isRecemLogado ? `recém logado (${tempoDesdeUltimoLogin}s)` : `ação recente (${tempoDesdeUltimaAcao}s)`;
-            console.log(`[TICK] Ignorando degradação para ${player.nome} (${motivo})`);
+            console.log(`[TICK] Ignorando degradação para ${playerAtualizado.nome} (${motivo})`);
         }
         
         // ==================== 1. ATUALIZA NECESSIDADES ====================
-        if (player.necessidades) {
+        if (playerAtualizado.necessidades) {
             const necessidadesAntes = {
-                fome: player.necessidades.fome,
-                sede: player.necessidades.sede,
-                sono: player.necessidades.sono,
-                energia: player.necessidades.energia
+                fome: playerAtualizado.necessidades.fome,
+                sede: playerAtualizado.necessidades.sede,
+                sono: playerAtualizado.necessidades.sono,
+                energia: playerAtualizado.necessidades.energia
             };
             
             // ✅ SÓ APLICA DEGRADAÇÃO SE NÃO TIVER AÇÃO RECENTE E NÃO FOR RECÉM LOGADO
             if (!ignorarDegradacao) {
-                player.necessidades.atualizar();
+                playerAtualizado.necessidades.atualizar();
             } else {
-                console.log(`[TICK] Pulando degradação de necessidades para ${player.nome}`);
+                console.log(`[TICK] Pulando degradação de necessidades para ${playerAtualizado.nome}`);
             }
             
-            if (necessidadesAntes.fome !== player.necessidades.fome) houveMudanca = true;
-            if (necessidadesAntes.sede !== player.necessidades.sede) houveMudanca = true;
-            if (necessidadesAntes.sono !== player.necessidades.sono) houveMudanca = true;
+            if (necessidadesAntes.fome !== playerAtualizado.necessidades.fome) houveMudanca = true;
+            if (necessidadesAntes.sede !== playerAtualizado.necessidades.sede) houveMudanca = true;
+            if (necessidadesAntes.sono !== playerAtualizado.necessidades.sono) houveMudanca = true;
             
             // Alertas de necessidade (só se não ignorou)
             if (!ignorarDegradacao) {
-                if (player.necessidades.fome >= 80 && necessidadesAntes.fome < 80) {
-                    alertas.push({ tipo: 'fome', mensagem: '⚠️ Você está com muita fome!', nivel: player.necessidades.fome });
+                if (playerAtualizado.necessidades.fome >= 80 && necessidadesAntes.fome < 80) {
+                    alertas.push({ tipo: 'fome', mensagem: '⚠️ Você está com muita fome!', nivel: playerAtualizado.necessidades.fome });
                 }
-                if (player.necessidades.sede >= 80 && necessidadesAntes.sede < 80) {
-                    alertas.push({ tipo: 'sede', mensagem: '💧 Você está com muita sede!', nivel: player.necessidades.sede });
+                if (playerAtualizado.necessidades.sede >= 80 && necessidadesAntes.sede < 80) {
+                    alertas.push({ tipo: 'sede', mensagem: '💧 Você está com muita sede!', nivel: playerAtualizado.necessidades.sede });
                 }
-                if (player.necessidades.sono >= 80 && necessidadesAntes.sono < 80) {
-                    alertas.push({ tipo: 'sono', mensagem: '😴 Você está muito cansado!', nivel: player.necessidades.sono });
+                if (playerAtualizado.necessidades.sono >= 80 && necessidadesAntes.sono < 80) {
+                    alertas.push({ tipo: 'sono', mensagem: '😴 Você está muito cansado!', nivel: playerAtualizado.necessidades.sono });
                 }
             }
             
-            if (player.necessidades.banheiro >= 90) {
-                alertas.push({ tipo: 'banheiro', mensagem: '🚽 Você precisa ir ao banheiro URGENTE!', nivel: player.necessidades.banheiro });
+            if (playerAtualizado.necessidades.banheiro >= 90) {
+                alertas.push({ tipo: 'banheiro', mensagem: '🚽 Você precisa ir ao banheiro URGENTE!', nivel: playerAtualizado.necessidades.banheiro });
             }
-            if (player.necessidades.higiene <= 20) {
-                alertas.push({ tipo: 'higiene', mensagem: '🧼 Você está com a higiene baixa!', nivel: player.necessidades.higiene });
+            if (playerAtualizado.necessidades.higiene <= 20) {
+                alertas.push({ tipo: 'higiene', mensagem: '🧼 Você está com a higiene baixa!', nivel: playerAtualizado.necessidades.higiene });
             }
         }
         
         // ==================== 2. ATUALIZA SAÚDE ====================
-        if (player.saude) {
-            player.saude.processarMedicamentos();
-            player.saude.atualizarSinaisVitais();
+        if (playerAtualizado.saude) {
+            playerAtualizado.saude.processarMedicamentos();
+            playerAtualizado.saude.atualizarSinaisVitais();
             
-            if (player.necessidades && !ignorarDegradacao) {
-                const dano = player.necessidades.getEfeitosNaSaude();
+            if (playerAtualizado.necessidades && !ignorarDegradacao) {
+                const dano = playerAtualizado.necessidades.getEfeitosNaSaude();
                 if (dano > 0) {
-                    player.saude.aplicarDano('geral', 'degradacao', dano);
+                    playerAtualizado.saude.aplicarDano('geral', 'degradacao', dano);
                     houveMudanca = true;
                     
                     if (dano >= 5) {
-                        alertas.push({ tipo: 'saude', mensagem: `❤️ Sua saúde caiu devido à negligência!`, nivel: player.saude.geral });
+                        alertas.push({ tipo: 'saude', mensagem: `❤️ Sua saúde caiu devido à negligência!`, nivel: playerAtualizado.saude.geral });
                     }
                 }
             }
             
-            if (player.saude.morto && !player.saude.dataMorte) {
-                player.saude.dataMorte = new Date();
-                alertas.push({ tipo: 'morte', mensagem: `💀 VOCÊ MORREU! Causa: ${player.saude.causaMorte || 'Negligência'}` });
+            if (playerAtualizado.saude.morto && !playerAtualizado.saude.dataMorte) {
+                playerAtualizado.saude.dataMorte = new Date();
+                alertas.push({ tipo: 'morte', mensagem: `💀 VOCÊ MORREU! Causa: ${playerAtualizado.saude.causaMorte || 'Negligência'}` });
                 houveMudanca = true;
-                await notificarMorte(player, io);
+                await notificarMorte(playerAtualizado, io);
             }
         }
         
         // ==================== 3. ATUALIZA ECONOMIA ====================
-        if (player.economia && !ignorarDegradacao) {
-            player.economia.atualizarInvestimentos();
+        if (playerAtualizado.economia && !ignorarDegradacao) {
+            playerAtualizado.economia.atualizarInvestimentos();
             
-            const gastosProcessados = await player.economia.processarGastosFixos();
+            const gastosProcessados = await playerAtualizado.economia.processarGastosFixos();
             if (gastosProcessados.length > 0) {
-                alertas.push({ tipo: 'economia', mensagem: `💰 Gastos automáticos: ${gastosProcessados.join(', ')}`, nivel: player.economia.dinheiroVivo });
+                alertas.push({ tipo: 'economia', mensagem: `💰 Gastos automáticos: ${gastosProcessados.join(', ')}`, nivel: playerAtualizado.economia.dinheiroVivo });
                 houveMudanca = true;
             }
         }
         
         // ==================== 4. ATUALIZA HABILIDADES ====================
-        if (player.habilidades && !ignorarDegradacao) {
-            const treinoResultado = await player.habilidades.treinoDiario();
+        if (playerAtualizado.habilidades && !ignorarDegradacao) {
+            const treinoResultado = await playerAtualizado.habilidades.treinoDiario();
             if (treinoResultado && treinoResultado.length > 0) {
                 houveMudanca = true;
             }
             
-            if (player.habilidades.historicoProgresso.length > 50) {
-                player.habilidades.historicoProgresso = player.habilidades.historicoProgresso.slice(-50);
+            if (playerAtualizado.habilidades.historicoProgresso.length > 50) {
+                playerAtualizado.habilidades.historicoProgresso = playerAtualizado.habilidades.historicoProgresso.slice(-50);
             }
         }
         
         // ==================== 5. LIMITAR HISTÓRICOS ====================
-        if (player.habilidades && player.habilidades.historicoProgresso && player.habilidades.historicoProgresso.length > 50) {
-            player.habilidades.historicoProgresso = player.habilidades.historicoProgresso.slice(-50);
+        if (playerAtualizado.habilidades && playerAtualizado.habilidades.historicoProgresso && playerAtualizado.habilidades.historicoProgresso.length > 50) {
+            playerAtualizado.habilidades.historicoProgresso = playerAtualizado.habilidades.historicoProgresso.slice(-50);
             houveMudanca = true;
         }
         
-        if (player.necessidades && player.necessidades.limitarHistoricos) {
-            player.necessidades.limitarHistoricos();
+        if (playerAtualizado.necessidades && playerAtualizado.necessidades.limitarHistoricos) {
+            playerAtualizado.necessidades.limitarHistoricos();
             houveMudanca = true;
         }
         
-        if (player.economia && player.economia.limitarTransacoes) {
-            player.economia.limitarTransacoes();
+        if (playerAtualizado.economia && playerAtualizado.economia.limitarTransacoes) {
+            playerAtualizado.economia.limitarTransacoes();
             houveMudanca = true;
         }
         
         // ==================== 6. SALVA E NOTIFICA ====================
         if (houveMudanca) {
-            await player.save();
+            await playerAtualizado.save();
             
-            if (player.socketId && io.sockets.sockets.get(player.socketId)) {
-                io.to(player.socketId).emit('tickAtualizacao', {
-                    necessidades: player.necessidades ? {
-                        fome: player.necessidades.fome,
-                        sede: player.necessidades.sede,
-                        sono: player.necessidades.sono,
-                        energia: player.necessidades.energia,
-                        banheiro: player.necessidades.banheiro,
-                        higiene: player.necessidades.higiene,
-                        social: player.necessidades.social,
-                        lazer: player.necessidades.lazer
+            if (playerAtualizado.socketId && io.sockets.sockets.get(playerAtualizado.socketId)) {
+                io.to(playerAtualizado.socketId).emit('tickAtualizacao', {
+                    necessidades: playerAtualizado.necessidades ? {
+                        fome: playerAtualizado.necessidades.fome,
+                        sede: playerAtualizado.necessidades.sede,
+                        sono: playerAtualizado.necessidades.sono,
+                        energia: playerAtualizado.necessidades.energia,
+                        banheiro: playerAtualizado.necessidades.banheiro,
+                        higiene: playerAtualizado.necessidades.higiene,
+                        social: playerAtualizado.necessidades.social,
+                        lazer: playerAtualizado.necessidades.lazer
                     } : null,
-                    saude: player.saude ? {
-                        geral: player.saude.geral,
-                        consciente: player.saude.consciente,
-                        sinais: player.saude.sinaisVitais
+                    saude: playerAtualizado.saude ? {
+                        geral: playerAtualizado.saude.geral,
+                        consciente: playerAtualizado.saude.consciente,
+                        sinais: playerAtualizado.saude.sinaisVitais
                     } : null,
-                    economia: player.economia ? {
-                        dinheiro: player.economia.dinheiroVivo,
-                        patrimonio: player.economia.patrimonioTotal
+                    economia: playerAtualizado.economia ? {
+                        dinheiro: playerAtualizado.economia.dinheiroVivo,
+                        patrimonio: playerAtualizado.economia.patrimonioTotal
                     } : null,
                     alertas: alertas
                 });
+                console.log(`[TICK] Evento enviado para ${playerAtualizado.nome}`);
+            } else {
+                console.log(`[TICK] Socket NÃO encontrado para ${playerAtualizado.nome}`);
             }
         }
         
-        if (alertas.length > 0 && player.socketId) {
-            io.to(player.socketId).emit('alertas', { alertas: alertas });
+        if (alertas.length > 0 && playerAtualizado.socketId) {
+            io.to(playerAtualizado.socketId).emit('alertas', { alertas: alertas });
         }
         
-        if (player.saude && player.saude.morto) {
-            if (player.socketId) {
-                io.to(player.socketId).emit('gameOver', {
-                    causa: player.saude.causaMorte,
-                    data: player.saude.dataMorte
+        if (playerAtualizado.saude && playerAtualizado.saude.morto) {
+            if (playerAtualizado.socketId) {
+                io.to(playerAtualizado.socketId).emit('gameOver', {
+                    causa: playerAtualizado.saude.causaMorte,
+                    data: playerAtualizado.saude.dataMorte
                 });
                 
                 setTimeout(() => {
-                    const socket = io.sockets.sockets.get(player.socketId);
+                    const socket = io.sockets.sockets.get(playerAtualizado.socketId);
                     if (socket) {
                         socket.disconnect();
                     }
@@ -248,7 +253,7 @@ console.log(`[TICK] Player: ${player.nome}`);
         }
         
     } catch (erro) {
-        console.error(`[TICK] Erro ao processar jogador ${player._id}:`, erro);
+        console.error(`[TICK] Erro ao processar jogador:`, erro);
     }
 }
 
