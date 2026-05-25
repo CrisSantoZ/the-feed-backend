@@ -285,12 +285,6 @@ NecessidadesSchema.methods.atualizar = function () {
     const horasDesdeUltimoSocial = (agora - this.ultimoSocial) / (1000 * 60 * 60);
     const horasDesdeUltimoLazer = (agora - this.ultimoLazer) / (1000 * 60 * 60);
 
-    // ✅ LOGS DE DEBUG
-    console.log(`[NECESSIDADES] ===== ATUALIZANDO =====`);
-    console.log(`[NECESSIDADES] horasDesdeUltimoSono: ${horasDesdeUltimoSono}`);
-    console.log(`[NECESSIDADES] sono ANTES: ${this.sono}`);
-    console.log(`[NECESSIDADES] estado.desmaiado: ${this.estado.desmaiadoPorExaustao}`);
-
     if (horasDesdeUltimaRefeicao > 0) {
         this.fome = Math.min(100, this.fome + (horasDesdeUltimaRefeicao * 0.0695));
     }
@@ -300,11 +294,7 @@ NecessidadesSchema.methods.atualizar = function () {
     }
 
     if (horasDesdeUltimoSono > 0 && !this.estado.desmaiadoPorExaustao) {
-        console.log(`[NECESSIDADES] AUMENTANDO SONO!`);
-        this.sono = Math.min(100, this.sono + (horasDesdeUltimoSono * 50));
-        console.log(`[NECESSIDADES] sono DEPOIS: ${this.sono}`);
-    } else {
-        console.log(`[NECESSIDADES] SONO NÃO AUMENTADO. Motivo: horasDesdeUltimoSono > 0? ${horasDesdeUltimoSono > 0}, desmaiado? ${this.estado.desmaiadoPorExaustao}`);
+        this.sono = Math.min(100, this.sono + (horasDesdeUltimoSono * 0.0695));
     }
 
     if (horasDesdeUltimoBanheiro > 0) {
