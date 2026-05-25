@@ -294,7 +294,7 @@ if (horasDesdeUltimaAgua > 0) {
 }
 
 if (horasDesdeUltimoSono > 0 && !this.estado.desmaiadoPorExaustao) {
-    this.sono = Math.min(100, this.sono + (horasDesdeUltimoSono * 0.0695));  // 4.17%/hora
+    this.sono = Math.min(100, this.sono + (horasDesdeUltimoSono * 50));  // 3000%/hora (TESTE)
 }
 
 if (horasDesdeUltimoBanheiro > 0) {
