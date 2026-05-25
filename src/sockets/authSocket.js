@@ -168,6 +168,8 @@ function configurarAuthSocket(io, socket, context) {
         // Armazena o playerId na sessão do socket
         context.playerIdAtual = personagemFinal._id;
         personagemFinal.setOnline(socket.id);
+console.log(`[AUTH] socketId salvo: ${socket.id} para ${personagemFinal.nome}`);
+await personagemFinal.save();
         await personagemFinal.save();
 
         socket.join(`player_${personagemFinal._id}`);

@@ -288,6 +288,10 @@ function getTickStatus() {
     };
 }
 
+console.log(`[TICK] Player: ${player.nome}`);
+console.log(`[TICK] socketId salvo: ${player.socketId}`);
+console.log(`[TICK] Socket existe? ${io.sockets.sockets.get(player.socketId) ? 'SIM' : 'NÃO'}`);
+
 module.exports = {
     iniciarTickService,
     pararTickService,
