@@ -283,34 +283,35 @@ NecessidadesSchema.methods.atualizar = function () {
     const horasDesdeUltimoSocial = (agora - this.ultimoSocial) / (1000 * 60 * 60);
     const horasDesdeUltimoLazer = (agora - this.ultimoLazer) / (1000 * 60 * 60);
 
-    // NOVAS TAXAS (para compensar o bug)
-    if (horasDesdeUltimaRefeicao > 0) {
-        this.fome = Math.min(100, this.fome + (horasDesdeUltimaRefeicao * 0.42));  // 4.2%/hora
-    }
+    // TAXAS PARA 24 HORAS (4.17% por hora)
+if (horasDesdeUltimaRefeicao > 0) {
+    this.fome = Math.min(100, this.fome + (horasDesdeUltimaRefeicao * 0.0695));  // 4.17%/hora
+}
 
-    if (horasDesdeUltimaAgua > 0) {
-        this.sede = Math.min(100, this.sede + (horasDesdeUltimaAgua * 0.5));  // 5%/hora
-    }
+if (horasDesdeUltimaAgua > 0) {
+    this.sede = Math.min(100, this.sede + (horasDesdeUltimaAgua * 0.0695));  // 4.17%/hora
+}
 
-    if (horasDesdeUltimoSono > 0 && !this.estado.desmaiadoPorExaustao) {
-        this.sono = Math.min(100, this.sono + (horasDesdeUltimoSono * 1.7));  // 6 / 3.6
-    }
+if (horasDesdeUltimoSono > 0 && !this.estado.desmaiadoPorExaustao) {
+    this.sono = Math.min(100, this.sono + (horasDesdeUltimoSono * 0.0695));  // 4.17%/hora
+}
 
-    if (horasDesdeUltimoBanheiro > 0) {
-        this.banheiro = Math.min(100, this.banheiro + (horasDesdeUltimoBanheiro * 8));
-    }
+// MANTÉM AS DEMAIS TAXAS IGUAL
+if (horasDesdeUltimoBanheiro > 0) {
+    this.banheiro = Math.min(100, this.banheiro + (horasDesdeUltimoBanheiro * 8));
+}
 
-    if (horasDesdeUltimoBanho > 0) {
-        this.higiene = Math.max(0, this.higiene - (horasDesdeUltimoBanho * 1.5));
-    }
+if (horasDesdeUltimoBanho > 0) {
+    this.higiene = Math.max(0, this.higiene - (horasDesdeUltimoBanho * 1.5));
+}
 
-    if (horasDesdeUltimoSocial > 0 && !this.estado.desmaiadoPorExaustao) {
-        this.social = Math.max(0, this.social - (horasDesdeUltimoSocial * 1));
-    }
+if (horasDesdeUltimoSocial > 0 && !this.estado.desmaiadoPorExaustao) {
+    this.social = Math.max(0, this.social - (horasDesdeUltimoSocial * 1));
+}
 
-    if (horasDesdeUltimoLazer > 0 && !this.estado.desmaiadoPorExaustao) {
-        this.lazer = Math.max(0, this.lazer - (horasDesdeUltimoLazer * 1));
-    }
+if (horasDesdeUltimoLazer > 0 && !this.estado.desmaiadoPorExaustao) {
+    this.lazer = Math.max(0, this.lazer - (horasDesdeUltimoLazer * 1));
+}
 
     this.intimidade = Math.min(100, this.intimidade + 0.5);
 
