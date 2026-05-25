@@ -285,11 +285,11 @@ NecessidadesSchema.methods.atualizar = function () {
 
     // NOVAS TAXAS (para compensar o bug)
     if (horasDesdeUltimaRefeicao > 0) {
-        this.fome = Math.min(100, this.fome + (horasDesdeUltimaRefeicao * 0.1));  // 0.1% por hora
+        this.fome = Math.min(100, this.fome + (horasDesdeUltimaRefeicao * 0.07));  // 4.2%/hora
     }
 
     if (horasDesdeUltimaAgua > 0) {
-        this.sede = Math.min(100, this.sede + (horasDesdeUltimaAgua * 0.12));  // 0.12% por hora
+        this.sede = Math.min(100, this.sede + (horasDesdeUltimaAgua * 0.083));  // 5%/hora
     }
 
     if (horasDesdeUltimoSono > 0 && !this.estado.desmaiadoPorExaustao) {
