@@ -63,6 +63,11 @@ async function processarTick(io) {
 // Processar um jogador individual
 async function processarJogador(player, io) {
     try {
+
+console.log(`[TICK] Player: ${player.nome}`);
+        console.log(`[TICK] socketId salvo: ${player.socketId}`);
+        console.log(`[TICK] Socket existe? ${io.sockets.sockets.get(player.socketId) ? 'SIM' : 'NÃO'}`);
+
         let houveMudanca = false;
         let alertas = [];
         
@@ -287,11 +292,6 @@ function getTickStatus() {
         unidade: 'segundos'
     };
 }
-
-console.log(`[TICK] Player: ${player.nome}`);
-console.log(`[TICK] socketId salvo: ${player.socketId}`);
-console.log(`[TICK] Socket existe? ${io.sockets.sockets.get(player.socketId) ? 'SIM' : 'NÃO'}`);
-
 module.exports = {
     iniciarTickService,
     pararTickService,
