@@ -1,4 +1,3 @@
-// server/src/controllers/comidaController.js
 const Player = require('../models/Player');
 
 async function comerDireto(playerId, prato, preco, recuperacao) {
@@ -31,8 +30,11 @@ async function comerDireto(playerId, prato, preco, recuperacao) {
             player.necessidades.sede = Math.max(0, player.necessidades.sede - recuperacao.sede);
         }
         
+        // ✅ ENERGIA LIMITADA PELO SONO (comida não recupera energia se estiver com sono)
         if (recuperacao.energia && player.necessidades) {
-            player.necessidades.energia = Math.min(100, player.necessidades.energia + recuperacao.energia);
+            const limiteEnergia = Math.max(0, 100 - player.necessidades.sono);
+            const novaEnergia = Math.min(limiteEnergia, player.necessidades.energia + recuperacao.energia);
+            player.necessidades.energia = novaEnergia;
         }
         
         if (recuperacao.felicidade && player.necessidades) {
