@@ -41,9 +41,11 @@ function configurarEmpresaSocket(io, socket, context) {
 
     socket.on('candidatarVaga', async (dados) => {
         const playerId = getPlayerId();
-        if (!playerId) return socket.emit('erroServidor', { erro: 'Jogador não identificado' });
+        console.log(`[VAGAS] candidatarVaga: playerId=${playerId}, vagaId=${dados.vagaId}, empresaId=${dados.empresaId}`);
+        if (!playerId) return socket.emit('candidaturaEnviada', { sucesso: false, erro: 'Jogador não identificado. Faça login novamente.' });
         const resultado = await EmpresaController.candidatarVaga(dados.empresaId, dados.vagaId, playerId);
-        socket.emit(resultado.sucesso ? 'candidaturaEnviada' : 'erroServidor', resultado);
+        console.log(`[VAGAS] resultado candidatura:`, resultado);
+        socket.emit('candidaturaEnviada', resultado);
     });
 
     socket.on('contratarFuncionario', async (dados) => {
