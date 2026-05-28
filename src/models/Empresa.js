@@ -49,7 +49,7 @@ const EmpresaSchema = new mongoose.Schema({
         enum: ['tecnologia', 'comercio', 'servicos', 'industria', 'alimenticio', 'financeiro', 'saude', 'educacao', 'imobiliario', 'transporte', 'construcao', 'entretenimento', 'outro'],
         default: 'outro'
     },
-    dono: { type: mongoose.Schema.Types.ObjectId, ref: 'Player', required: true },
+    dono: { type: mongoose.Schema.Types.ObjectId, ref: 'Player', default: null },
     socios: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Player' }],
     unidades: [UnidadeSchema],
     vagasAbertas: [VagaSchema],
