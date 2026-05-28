@@ -101,7 +101,7 @@ async function candidatarVaga(empresaId, vagaId, playerId) {
         if (!player) return { sucesso: false, erro: 'Personagem não encontrado' };
 
         const hab = player.habilidades;
-        const nivelPlayer = hab?.estatisticas?.nivelMedio || 1;
+        const nivelPlayer = hab?.estatisticas?.nivelMedio ?? 1;
 
         if (nivelPlayer < vaga.requisitos.nivelMinimo) {
             return { sucesso: false, erro: `Requer nível mínimo ${vaga.requisitos.nivelMinimo}. Seu nível: ${nivelPlayer}` };

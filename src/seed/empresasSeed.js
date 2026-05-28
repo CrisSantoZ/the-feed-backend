@@ -92,7 +92,7 @@ const empresasData = [
     {
         nome: 'Petrobras - Sede Rio', nomeFantasia: 'Petrobras', descricao: 'Sede administrativa da Petrobras.', ramo: 'industria', cidade: 'Rio de Janeiro', estado: 'Rio de Janeiro', nivel: 50, faturamentoBase: 25000,
         vagas: [
-            { cargo: 'Auxiliar Administrativo', descricao: 'Suporte administrativo.', salarioSemanal: 600, categoria: 'entry', requisitos: { nivelMinimo: 1, atributos: { inteligencia: 8, organizacao: 5 } } },
+            { cargo: 'Auxiliar Administrativo', descricao: 'Suporte administrativo.', salarioSemanal: 600, categoria: 'entry', requisitos: { nivelMinimo: 1, atributos: { inteligencia: 8, foco: 5 } } },
             { cargo: 'Técnico de Segurança do Trabalho', descricao: 'Inspeções e normas de segurança.', salarioSemanal: 1100, categoria: 'profissionais', requisitos: { nivelMinimo: 3, atributos: { foco: 18, memoria: 15 } } },
             { cargo: 'Engenheiro de Petróleo', descricao: 'Exploração e produção.', salarioSemanal: 3800, categoria: 'profissionais', requisitos: { nivelMinimo: 8, atributos: { inteligencia: 35, logica: 30, programacao: 10 } } }
         ]
@@ -110,8 +110,8 @@ const empresasData = [
     {
         nome: 'UNICAMP - Departamento Administrativo', nomeFantasia: 'UNICAMP', descricao: 'Setor administrativo da universidade.', ramo: 'educacao', cidade: 'Campinas', estado: 'São Paulo', nivel: 30, faturamentoBase: 7000,
         vagas: [
-            { cargo: 'Assistente Administrativo', descricao: 'Suporte aos departamentos.', salarioSemanal: 700, categoria: 'mentais', requisitos: { nivelMinimo: 2, atributos: { inteligencia: 10, memoria: 12, organizacao: 10 } } },
-            { cargo: 'Professor Substituto', descricao: 'Aulas de nível superior.', salarioSemanal: 1400, categoria: 'mentais', requisitos: { nivelMinimo: 4, atributos: { inteligencia: 25, carisma: 15, comunicacao: 15 } } },
+            { cargo: 'Assistente Administrativo', descricao: 'Suporte aos departamentos.', salarioSemanal: 700, categoria: 'mentais', requisitos: { nivelMinimo: 2, atributos: { inteligencia: 10, memoria: 12, foco: 10 } } },
+            { cargo: 'Professor Substituto', descricao: 'Aulas de nível superior.', salarioSemanal: 1400, categoria: 'mentais', requisitos: { nivelMinimo: 4, atributos: { inteligencia: 25, carisma: 15, persuasao: 15 } } },
             { cargo: 'Técnico de Laboratório', descricao: 'Suporte a laboratórios.', salarioSemanal: 900, categoria: 'profissionais', requisitos: { nivelMinimo: 3, atributos: { logica: 15, foco: 15 } } }
         ]
     },
@@ -129,7 +129,7 @@ const empresasData = [
         nome: 'Companhia Docas de Santos', nomeFantasia: 'Docas Santos', descricao: 'Administração do porto organizado.', ramo: 'servicos', cidade: 'Santos', estado: 'São Paulo', nivel: 22, faturamentoBase: 9000,
         vagas: [
             { cargo: 'Office Boy', descricao: 'Serviços internos.', salarioSemanal: 380, categoria: 'entry', requisitos: { nivelMinimo: 1, atributos: { velocidade: 6 } } },
-            { cargo: 'Almoxarife', descricao: 'Controle de estoque e materiais.', salarioSemanal: 600, categoria: 'mentais', requisitos: { nivelMinimo: 2, atributos: { memoria: 12, organizacao: 10 } } },
+            { cargo: 'Almoxarife', descricao: 'Controle de estoque e materiais.', salarioSemanal: 600, categoria: 'mentais', requisitos: { nivelMinimo: 2, atributos: { memoria: 12, foco: 10 } } },
             { cargo: 'Supervisor de Turno', descricao: 'Coordenação de equipe portuária.', salarioSemanal: 1800, categoria: 'gerencia', requisitos: { nivelMinimo: 5, atributos: { lideranca: 18, gestao: 15, resistencia: 12 } } }
         ]
     }
