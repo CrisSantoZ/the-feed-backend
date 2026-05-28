@@ -34,6 +34,8 @@ async function criarEmpresa(playerId, dados) {
         await empresa.save();
 
         player.economia.empresaId = empresa._id;
+        player.economia.empresaNome = empresa.nomeFantasia || empresa.nome;
+        player.economia.cargo = 'CEO';
         await player.save();
 
         return { sucesso: true, empresa: empresa.getResumo() };
@@ -145,6 +147,7 @@ async function candidatarVaga(empresaId, vagaId, playerId) {
             await empresa.save();
 
             player.economia.empresaId = empresa._id;
+            player.economia.empresaNome = empresa.nomeFantasia || empresa.nome;
             player.economia.cargo = vaga.cargo;
             player.economia.salario = vaga.salario;
             player.economia.ultimoPagamentoSalario = null;
@@ -161,7 +164,6 @@ async function candidatarVaga(empresaId, vagaId, playerId) {
             };
         }
 
-        // Empresa de jogador: adiciona como candidato
         if (vaga.candidatos.includes(playerId)) {
             return { sucesso: false, erro: 'Você já se candidatou a esta vaga' };
         }
@@ -205,6 +207,7 @@ async function contratarFuncionario(empresaId, vagaId, playerId, unidadeIndex) {
         const player = await Player.findById(playerId);
         if (player) {
             player.economia.empresaId = empresa._id;
+            player.economia.empresaNome = empresa.nomeFantasia || empresa.nome;
             player.economia.cargo = vaga.cargo;
             player.economia.salario = vaga.salario;
             await player.save();
@@ -232,6 +235,7 @@ async function demitirFuncionario(empresaId, playerId, funcionarioId) {
                 const demitido = await Player.findById(unidade.funcionarios[idx].playerId);
                 if (demitido) {
                     demitido.economia.empresaId = null;
+                    demitido.economia.empresaNome = null;
                     demitido.economia.cargo = null;
                     demitido.economia.salario = 0;
                     await demitido.save();
@@ -262,6 +266,7 @@ async function pedirDemissao(empresaId, playerId) {
                 const player = await Player.findById(playerId);
                 if (player) {
                     player.economia.empresaId = null;
+                    player.economia.empresaNome = null;
                     player.economia.cargo = null;
                     player.economia.salario = 0;
                     await player.save();

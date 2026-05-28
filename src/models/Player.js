@@ -175,7 +175,7 @@ PlayerSchema.methods.getResumoCompleto = function () {
 
         // Emprego
         cargo: this.economia?.cargo || null,
-        empresa: this.economia?.empresaId || null,
+        empresa: this.economia?.empresaNome || this.economia?.empresaId || null,
         salario: this.economia?.salario || 0,
 
         // Online
