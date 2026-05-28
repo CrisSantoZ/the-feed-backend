@@ -95,10 +95,6 @@ async function candidatarVaga(empresaId, vagaId, playerId) {
         if (!vaga) return { sucesso: false, erro: 'Vaga não encontrada' };
         if (vaga.status !== 'aberta') return { sucesso: false, erro: 'Vaga não está mais aberta' };
 
-        if (vaga.candidatos.includes(playerId)) {
-            return { sucesso: false, erro: 'Você já se candidatou a esta vaga' };
-        }
-
         const player = await Player.findById(playerId);
         if (!player) return { sucesso: false, erro: 'Personagem não encontrado' };
 
@@ -107,10 +103,50 @@ async function candidatarVaga(empresaId, vagaId, playerId) {
             return { sucesso: false, erro: `Requer nível mínimo ${vaga.requisitos.nivelMinimo}. Seu nível: ${nivelPlayer}` };
         }
 
+        // Se empresa é NPC (sem dono), contrata automaticamente
+        if (!empresa.dono) {
+            const idxUnidade = empresa.unidades.findIndex(u => u.funcionarios.length < u.capacidadeMaxima);
+            if (idxUnidade === -1) {
+                return { sucesso: false, erro: 'Todas as unidades estão com capacidade máxima' };
+            }
+
+            empresa.unidades[idxUnidade].funcionarios.push({
+                playerId,
+                cargo: vaga.cargo,
+                salario: vaga.salario,
+                dataContratacao: new Date(),
+                status: 'ativo'
+            });
+
+            vaga.status = 'preenchida';
+            empresa.totalFuncionariosContratados += 1;
+            await empresa.save();
+
+            player.economia.empresaId = empresa._id;
+            player.economia.cargo = vaga.cargo;
+            player.economia.salario = vaga.salario;
+            await player.save();
+
+            return {
+                sucesso: true,
+                contratado: true,
+                mensagem: `🎉 Contratado como ${vaga.cargo} na ${empresa.nomeFantasia || empresa.nome}! Salário: R$ ${vaga.salario}/mês`,
+                cargo: vaga.cargo,
+                empresa: empresa.nomeFantasia || empresa.nome,
+                empresaId: empresa._id,
+                salario: vaga.salario
+            };
+        }
+
+        // Empresa de jogador: só adiciona como candidato
+        if (vaga.candidatos.includes(playerId)) {
+            return { sucesso: false, erro: 'Você já se candidatou a esta vaga' };
+        }
+
         vaga.candidatos.push(playerId);
         await empresa.save();
 
-        return { sucesso: true, mensagem: 'Candidatura enviada com sucesso!' };
+        return { sucesso: true, mensagem: 'Candidatura enviada com sucesso! Aguarde o dono da empresa analisar.' };
     } catch (erro) {
         return { sucesso: false, erro: erro.message };
     }
