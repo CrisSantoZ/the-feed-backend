@@ -74,9 +74,12 @@ function configurarSockets(io) {
         });
 
         // ==================== MÓDULOS DE SOCKET EXISTENTES ====================
-        configurarAuthSocket(io, socket, { playerIdAtual });
+        // Contexto compartilhado entre todos os módulos de socket
+        const context = { playerIdAtual, socketNomes };
+
+        configurarAuthSocket(io, socket, context);
         configurarFaceclaimSocket(io, socket, { groq });
-        configurarPlayerSocket(io, socket, { playerIdAtual });
+        configurarPlayerSocket(io, socket, context);
         configurarNecessidadesSocket(io, socket);
         configurarSaudeSocket(io, socket);
         configurarIdiomasSocket(io, socket);
@@ -84,7 +87,7 @@ function configurarSockets(io) {
         configurarEconomiaSocket(io, socket);
         configurarSocialSocket(io, socket);
         configurarInventarioSocket(io, socket);
-        configurarEmpresaSocket(io, socket, { playerIdAtual, socketNomes });
+        configurarEmpresaSocket(io, socket, context);
 
         // ==================== DESCONEXÃO ====================
         socket.on('disconnect', async () => {
