@@ -179,19 +179,6 @@ async function seedEmpresas() {
             continue;
         }
 
-        const vagas = data.vagas.map(v => ({
-            cargo: v.cargo,
-            descricao: v.descricao,
-            salario: v.salarioSemanal,
-            categoria: v.categoria,
-            requisitos: {
-                nivelMinimo: v.requisitos.nivelMinimo,
-                atributos: v.requisitos.atributos || {}
-            },
-            status: 'aberta',
-            candidatos: []
-        }));
-
         const empresa = new Empresa({
             nome: data.nome,
             nomeFantasia: data.nomeFantasia,
