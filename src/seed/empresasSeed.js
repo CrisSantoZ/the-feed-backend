@@ -141,8 +141,41 @@ async function seedEmpresas() {
 
     for (const data of empresasData) {
         const existente = await Empresa.findOne({ nome: data.nome });
+
+        const vagas = data.vagas.map(v => ({
+            cargo: v.cargo,
+            descricao: v.descricao,
+            salario: v.salarioSemanal,
+            categoria: v.categoria,
+            requisitos: {
+                nivelMinimo: v.requisitos.nivelMinimo,
+                atributos: v.requisitos.atributos || {}
+            },
+            status: 'aberta',
+            candidatos: []
+        }));
+
         if (existente) {
-            console.log(`[SEED] Empresa já existe: ${data.nome}`);
+            // Atualiza vagas existentes com nova estrutura
+            let precisaAtualizar = false;
+            for (const vaga of existente.vagasAbertas) {
+                if (!vaga.categoria) {
+                    vaga.categoria = 'entry';
+                    precisaAtualizar = true;
+                }
+                if (!vaga.requisitos?.atributos) {
+                    vaga.requisitos = vaga.requisitos || {};
+                    vaga.requisitos.atributos = {};
+                    precisaAtualizar = true;
+                }
+            }
+            if (precisaAtualizar) {
+                await existente.save();
+                console.log(`[SEED] Empresa atualizada: ${data.nome}`);
+                contador++;
+            } else {
+                console.log(`[SEED] Empresa já atualizada: ${data.nome}`);
+            }
             continue;
         }
 
