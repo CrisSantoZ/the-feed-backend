@@ -1,16 +1,24 @@
 const Empresa = require('../models/Empresa');
 
 /*
- * Tabela de referência salarial semanal (1/4 do salário mensal real do mercado brasileiro):
+ * Tabela de referência salarial SEMANAL (Salário Mensal Real ÷ 4):
  *
- * Categoria     | Entry (Nv1-2) | Júnior (Nv3-4) | Pleno (Nv5-6)  | Sênior (Nv7+)
- * --------------|:-------------:|:--------------:|:--------------:|:------------:
- * Entry         | R$380-550     | —              | —              | —
- * Físicas       | R$400-600     | R$650-950      | R$1000-1300    | R$1350-1700
- * Mentais       | R$450-650     | R$750-1100     | R$1250-1700    | R$1800-2500
- * Profissionais | R$500-700     | R$850-1300     | R$1500-2100    | R$2300-3800
- * Sociais       | R$380-550     | R$600-900      | R$950-1300     | R$1350-1700
- * Gerência      | —             | R$1000-1400    | R$1600-2200    | R$2400-5000
+ * Salário mínimo Brasil 2025 ≈ R$1.518/mês → R$380/semana
+ *
+ * Categoria     | Entry (Nv1-2)     | Júnior (Nv3-4)    | Pleno (Nv5-6)     | Sênior (Nv7+)
+ * --------------|:-----------------:|:-----------------:|:-----------------:|:-----------------:
+ * Entry         | R$350-550         | —                 | —                 | —
+ *               | (estágio, office) |                   |                   |
+ * Físicas       | R$400-600         | R$600-950         | R$950-1300        | R$1300-1700
+ *               | (servente, vigia) | (pedreiro, op.)   | (motorista, tec.) | (op. especializado)
+ * Mentais       | R$450-650         | R$700-1100        | R$1200-1700       | R$1800-3000
+ *               | (auxiliar)        | (assistente)      | (analista)        | (médico, professor)
+ * Profissionais | R$500-700         | R$800-1300        | R$1500-2200       | R$2500-5000
+ *               | (técnico jr)      | (dev jr, tec.)    | (dev pl, eng.)    | (eng. sênior, espec.)
+ * Sociais       | R$380-550         | R$550-800         | R$800-1300        | R$1300-1800
+ *               | (vendedor)        | (recepcionista)   | (repórter)        | (rel. públicas)
+ * Gerência      | —                 | R$1000-1500       | R$1500-2500       | R$2500-5000
+ *                                   | (supervisor jr)   | (coordenador)     | (gerente, diretor)
  */
 
 const empresasData = [
@@ -44,7 +52,7 @@ const empresasData = [
         nome: 'Hospital São Paulo', nomeFantasia: 'Hospital SP', descricao: 'Rede hospitalar particular na zona sul.', ramo: 'saude', cidade: 'São Paulo', estado: 'São Paulo', nivel: 18, faturamentoBase: 8000,
         vagas: [
             { cargo: 'Recepcionista', descricao: 'Agendamento e atendimento ao público.', salarioSemanal: 500, categoria: 'entry', requisitos: { nivelMinimo: 1, atributos: { carisma: 8, memoria: 5 } } },
-            { cargo: 'Técnico de Enfermagem', descricao: 'Auxílio em procedimentos.', salarioSemanal: 900, categoria: 'profissionais', requisitos: { nivelMinimo: 2, atributos: { foco: 15, resistencia: 10 } } },
+            { cargo: 'Técnico de Enfermagem', descricao: 'Auxílio em procedimentos.', salarioSemanal: 800, categoria: 'profissionais', requisitos: { nivelMinimo: 2, atributos: { foco: 15, resistencia: 10 } } },
             { cargo: 'Médico Residente', descricao: 'Plantão no pronto-socorro.', salarioSemanal: 2200, categoria: 'mentais', requisitos: { nivelMinimo: 5, atributos: { inteligencia: 30, foco: 25, memoria: 20 } } }
         ]
     },
