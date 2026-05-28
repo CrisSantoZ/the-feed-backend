@@ -84,7 +84,7 @@ function configurarSockets(io) {
         configurarEconomiaSocket(io, socket);
         configurarSocialSocket(io, socket);
         configurarInventarioSocket(io, socket);
-        configurarEmpresaSocket(io, socket, { playerId: playerIdAtual, playerSockets: new Map() });
+        configurarEmpresaSocket(io, socket, { playerIdAtual, socketNomes });
 
         // ==================== DESCONEXÃO ====================
         socket.on('disconnect', async () => {
