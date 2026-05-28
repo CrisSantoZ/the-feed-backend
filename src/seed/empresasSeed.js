@@ -215,26 +215,21 @@ async function seedEmpresas() {
         }));
 
         if (existente) {
-            // Atualiza vagas existentes com nova estrutura
-            let precisaAtualizar = false;
-            for (const vaga of existente.vagasAbertas) {
-                if (!vaga.categoria) {
-                    vaga.categoria = 'entry';
-                    precisaAtualizar = true;
-                }
-                if (!vaga.requisitos?.atributos) {
-                    vaga.requisitos = vaga.requisitos || {};
-                    vaga.requisitos.atributos = {};
-                    precisaAtualizar = true;
+            // Substitui vagas existentes pelas novas (para adicionar novas categorias e expandir)
+            const vagasAntigas = existente.vagasAbertas;
+            const candidatosPreservados = {};
+            for (const vaga of vagasAntigas) {
+                if (vaga.candidatos?.length > 0) {
+                    candidatosPreservados[vaga.cargo] = vaga.candidatos;
                 }
             }
-            if (precisaAtualizar) {
-                await existente.save();
-                console.log(`[SEED] Empresa atualizada: ${data.nome}`);
-                contador++;
-            } else {
-                console.log(`[SEED] Empresa já atualizada: ${data.nome}`);
-            }
+            existente.vagasAbertas = vagas.map(v => ({
+                ...v,
+                candidatos: candidatosPreservados[v.cargo] || []
+            }));
+            await existente.save();
+            console.log(`[SEED] Empresa atualizada: ${data.nome} (${existente.vagasAbertas.length} vagas)`);
+            contador++;
             continue;
         }
 
