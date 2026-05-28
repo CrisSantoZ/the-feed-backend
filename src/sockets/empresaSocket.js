@@ -2,8 +2,9 @@ const EmpresaController = require('../controllers/empresaController');
 
 function configurarEmpresaSocket(io, socket, context) {
     const getPlayerId = () => {
-        if (context.playerIdAtual) return context.playerIdAtual;
-        return null;
+        const pid = context.session?.playerId;
+        console.log(`[VAGAS] getPlayerId = ${pid}`);
+        return pid || null;
     };
 
     socket.on('criarEmpresa', async (dados) => {

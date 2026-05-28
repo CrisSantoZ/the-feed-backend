@@ -166,7 +166,8 @@ function configurarAuthSocket(io, socket, context) {
         console.log(`[DEBUG] Iniciando sessão para: ${personagemFinal.nome}`);
         
         // Armazena o playerId na sessão do socket
-        context.playerIdAtual = personagemFinal._id;
+        context.session.playerId = personagemFinal._id;
+        console.log(`[AUTH] context.session.playerId = ${context.session.playerId}`);
         personagemFinal.setOnline(socket.id);
 console.log(`[AUTH] socketId salvo: ${socket.id} para ${personagemFinal.nome}`);
 await personagemFinal.save();

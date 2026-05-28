@@ -75,7 +75,8 @@ function configurarSockets(io) {
 
         // ==================== MÓDULOS DE SOCKET EXISTENTES ====================
         // Contexto compartilhado entre todos os módulos de socket
-        const context = { playerIdAtual, socketNomes };
+        // Usa objeto aninhado para garantir referencia mutavel
+        const context = { session: { playerId: null }, socketNomes };
 
         configurarAuthSocket(io, socket, context);
         configurarFaceclaimSocket(io, socket, { groq });
@@ -95,12 +96,13 @@ function configurarSockets(io) {
             
             socketNomes.delete(socket.id);
             
-            if (playerIdAtual) {
-                const player = await Player.findById(playerIdAtual);
+            const pid = context.session?.playerId;
+            if (pid) {
+                const player = await Player.findById(pid);
                 if (player) {
                     player.setOffline();
                     await player.save();
-                    io.emit('jogadorOffline', { playerId: playerIdAtual, nome: player.nome });
+                    io.emit('jogadorOffline', { playerId: pid, nome: player.nome });
                 }
             }
         });
