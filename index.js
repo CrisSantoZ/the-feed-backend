@@ -13,6 +13,7 @@ const mongoose = require('mongoose');
 const { conectarBanco } = require('./src/config/database');
 const { configurarSockets } = require('./src/sockets/gameSocket');
 const { iniciarTickService } = require('./src/services/tickService');
+const { seedEmpresas } = require('./src/seed/empresasSeed');
 
 const app = express();
 
@@ -48,6 +49,8 @@ async function iniciarServidor() {
 
         iniciarTickService(io);
         console.log('✅ Tick Service iniciado');
+
+        await seedEmpresas();
 
         const PORT = process.env.PORT || 3000;
         server.listen(PORT, () => {
