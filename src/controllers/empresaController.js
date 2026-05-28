@@ -225,6 +225,7 @@ async function demitirFuncionario(empresaId, playerId, funcionarioId) {
     try {
         const empresa = await Empresa.findById(empresaId);
         if (!empresa) return { sucesso: false, erro: 'Empresa não encontrada' };
+        if (!empresa.dono) return { sucesso: false, erro: 'Empresa não tem dono (NPC)' };
         if (empresa.dono.toString() !== playerId) return { sucesso: false, erro: 'Apenas o dono pode demitir' };
 
         for (const unidade of empresa.unidades) {

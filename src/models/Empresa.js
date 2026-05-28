@@ -81,7 +81,7 @@ EmpresaSchema.index({ 'unidades.cidade': 1 });
 EmpresaSchema.index({ ramo: 1 });
 
 EmpresaSchema.methods.getResumo = function() {
-    const totalFuncionarios = this.unidades.reduce((acc, u) => acc + (u.funcionarios?.length || 0), 0);
+    const totalFuncionarios = this.unidades.reduce((acc, u) => acc + (u.funcionarios?.filter(f => f.status === 'ativo').length || 0), 0);
     const totalVagas = this.vagasAbertas?.filter(v => v.status === 'aberta')?.length || 0;
     
     return {
