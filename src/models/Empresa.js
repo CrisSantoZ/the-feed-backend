@@ -15,12 +15,10 @@ const VagaSchema = new mongoose.Schema({
     cargo: { type: String, required: true },
     descricao: String,
     salario: { type: Number, required: true },
+    categoria: { type: String, enum: ['entry', 'fisicas', 'mentais', 'profissionais', 'sociais', 'gerencia'], default: 'entry' },
     requisitos: {
-        habilidades: [{
-            nome: String,
-            nivelMinimo: { type: Number, default: 0 }
-        }],
-        nivelMinimo: { type: Number, default: 1 }
+        nivelMinimo: { type: Number, default: 1 },
+        atributos: { type: mongoose.Schema.Types.Mixed, default: {} }
     },
     status: { type: String, enum: ['aberta', 'fechada', 'preenchida'], default: 'aberta' },
     candidatos: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Player' }],

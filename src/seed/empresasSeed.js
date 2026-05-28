@@ -1,216 +1,136 @@
 const Empresa = require('../models/Empresa');
 
+const categorias = {
+    entry: { nome: '📋 ENTRY LEVEL', nivelMin: 1, nivelMax: 2 },
+    fisicas: { nome: '💪 FÍSICAS', nivelMin: 2, nivelMax: 5 },
+    mentais: { nome: '🧠 MENTAIS', nivelMin: 2, nivelMax: 6 },
+    profissionais: { nome: '⚙️ PROFISSIONAIS', nivelMin: 3, nivelMax: 8 },
+    sociais: { nome: '🗣️ SOCIAIS', nivelMin: 2, nivelMax: 5 },
+    gerencia: { nome: '👑 GERÊNCIA', nivelMin: 5, nivelMax: 10 }
+};
+
 const empresasData = [
     // ==================== SÃO PAULO ====================
     {
-        nome: 'TechSolutions Brasil',
-        nomeFantasia: 'TechSolutions',
-        descricao: 'Empresa de tecnologia especializada em desenvolvimento de software e soluções em cloud computing.',
-        ramo: 'tecnologia',
-        cidade: 'São Paulo',
-        estado: 'São Paulo',
-        nivel: 15,
-        faturamentoBase: 5000,
+        nome: 'TechSolutions Brasil', nomeFantasia: 'TechSolutions', descricao: 'Empresa de tecnologia especializada em desenvolvimento de software.', ramo: 'tecnologia', cidade: 'São Paulo', estado: 'São Paulo', nivel: 15, faturamentoBase: 5000,
         vagas: [
-            { cargo: 'Desenvolvedor Pleno', descricao: 'Desenvolvimento web full-stack com React e Node.js.', salario: 5500, nivelMinimo: 3 },
-            { cargo: 'Analista de Dados Jr.', descricao: 'Análise de dados com Python e SQL.', salario: 3500, nivelMinimo: 1 },
-            { cargo: 'Estagiário de TI', descricao: 'Suporte e manutenção de sistemas internos.', salario: 1200, nivelMinimo: 1 }
+            { cargo: 'Estagiário de TI', descricao: 'Suporte interno e aprendizado em desenvolvimento.', salarioSemanal: 350, categoria: 'entry', requisitos: { nivelMinimo: 1, atributos: { inteligencia: 5, logica: 5 } } },
+            { cargo: 'Desenvolvedor Jr.', descricao: 'Desenvolvimento web com React e Node.js.', salarioSemanal: 900, categoria: 'profissionais', requisitos: { nivelMinimo: 3, atributos: { programacao: 10, logica: 15 } } },
+            { cargo: 'Desenvolvedor Pleno', descricao: 'Arquitetura de software e code review.', salarioSemanal: 1800, categoria: 'profissionais', requisitos: { nivelMinimo: 5, atributos: { programacao: 25, logica: 20, inteligencia: 15 } } },
+            { cargo: 'Analista de Dados', descricao: 'Análise de dados com Python e SQL.', salarioSemanal: 1400, categoria: 'mentais', requisitos: { nivelMinimo: 4, atributos: { logica: 20, inteligencia: 25 } } }
         ]
     },
     {
-        nome: 'MercadoDigital Ltda',
-        nomeFantasia: 'Mercado Digital',
-        descricao: 'Plataforma de e-commerce com atuação em todo o Brasil. Escritório na Av. Paulista.',
-        ramo: 'comercio',
-        cidade: 'São Paulo',
-        estado: 'São Paulo',
-        nivel: 10,
-        faturamentoBase: 4000,
+        nome: 'Construtora NovaVista', nomeFantasia: 'NovaVista', descricao: 'Construtora com mais de 20 anos no mercado imobiliário.', ramo: 'construcao', cidade: 'São Paulo', estado: 'São Paulo', nivel: 20, faturamentoBase: 10000,
         vagas: [
-            { cargo: 'Vendedor Online', descricao: 'Atendimento e vendas pela plataforma.', salario: 2200, nivelMinimo: 1 },
-            { cargo: 'Analista de Marketing', descricao: 'Gestão de tráfego e campanhas digitais.', salario: 3800, nivelMinimo: 2 },
-            { cargo: 'Logística', descricao: 'Coordenação de entregas e estoque.', salario: 1800, nivelMinimo: 1 }
+            { cargo: 'Servente de Obra', descricao: 'Auxiliar em canteiro de obras.', salarioSemanal: 500, categoria: 'entry', requisitos: { nivelMinimo: 1, atributos: { forca: 8 } } },
+            { cargo: 'Pedreiro', descricao: 'Assentamento de tijolos e reboco.', salarioSemanal: 900, categoria: 'fisicas', requisitos: { nivelMinimo: 2, atributos: { forca: 15, resistencia: 10 } } },
+            { cargo: 'Engenheiro Civil', descricao: 'Coordenação de obras e projetos.', salarioSemanal: 2200, categoria: 'profissionais', requisitos: { nivelMinimo: 6, atributos: { inteligencia: 25, logica: 20, gestao: 10 } } }
         ]
     },
     {
-        nome: 'SaúdeTotal Serviços Médicos',
-        nomeFantasia: 'SaúdeTotal',
-        descricao: 'Rede de clínicas particulares com unidades em toda a zona sul de SP.',
-        ramo: 'saude',
-        cidade: 'São Paulo',
-        estado: 'São Paulo',
-        nivel: 8,
-        faturamentoBase: 6000,
+        nome: 'MercadoDigital Ltda', nomeFantasia: 'Mercado Digital', descricao: 'Plataforma de e-commerce com atuação nacional.', ramo: 'comercio', cidade: 'São Paulo', estado: 'São Paulo', nivel: 10, faturamentoBase: 4000,
         vagas: [
-            { cargo: 'Recepcionista', descricao: 'Atendimento ao público e agendamento.', salario: 1800, nivelMinimo: 1 },
-            { cargo: 'Técnico de Enfermagem', descricao: 'Auxílio em procedimentos médicos.', salario: 2800, nivelMinimo: 2 }
+            { cargo: 'Atendente', descricao: 'Atendimento ao cliente online.', salarioSemanal: 400, categoria: 'entry', requisitos: { nivelMinimo: 1, atributos: { carisma: 5 } } },
+            { cargo: 'Vendedor Online', descricao: 'Vendas por chat e telefone.', salarioSemanal: 700, categoria: 'sociais', requisitos: { nivelMinimo: 2, atributos: { carisma: 15, persuasao: 10 } } },
+            { cargo: 'Analista de Marketing', descricao: 'Gestão de tráfego e campanhas.', salarioSemanal: 1300, categoria: 'profissionais', requisitos: { nivelMinimo: 4, atributos: { marketing: 15, criatividade: 15, inteligencia: 10 } } }
         ]
     },
     {
-        nome: 'Construtora NovaVista',
-        nomeFantasia: 'NovaVista',
-        descricao: 'Construtora com mais de 20 anos no mercado imobiliário de SP.',
-        ramo: 'construcao',
-        cidade: 'São Paulo',
-        estado: 'São Paulo',
-        nivel: 20,
-        faturamentoBase: 10000,
+        nome: 'Hospital São Paulo', nomeFantasia: 'Hospital SP', descricao: 'Rede hospitalar particular na zona sul.', ramo: 'saude', cidade: 'São Paulo', estado: 'São Paulo', nivel: 18, faturamentoBase: 8000,
         vagas: [
-            { cargo: 'Engenheiro Civil', descricao: 'Coordenação de obras residenciais.', salario: 7000, nivelMinimo: 5 },
-            { cargo: 'Pedreiro', descricao: 'Obras e reformas.', salario: 2500, nivelMinimo: 1 },
-            { cargo: 'Arquiteto Jr.', descricao: 'Projetos residenciais e comerciais.', salario: 4000, nivelMinimo: 3 }
+            { cargo: 'Recepcionista', descricao: 'Agendamento e atendimento ao público.', salarioSemanal: 500, categoria: 'entry', requisitos: { nivelMinimo: 1, atributos: { carisma: 8, memoria: 5 } } },
+            { cargo: 'Técnico de Enfermagem', descricao: 'Auxílio em procedimentos.', salarioSemanal: 800, categoria: 'profissionais', requisitos: { nivelMinimo: 2, atributos: { foco: 15, resistencia: 10 } } },
+            { cargo: 'Médico Residente', descricao: 'Plantão no pronto-socorro.', salarioSemanal: 2000, categoria: 'mentais', requisitos: { nivelMinimo: 5, atributos: { inteligencia: 30, foco: 25, memoria: 20 } } }
         ]
     },
     {
-        nome: 'Transportes Rápidos Ltda',
-        nomeFantasia: 'Transportes Rápidos',
-        descricao: 'Empresa de logística e transporte intermunicipal.',
-        ramo: 'transporte',
-        cidade: 'São Paulo',
-        estado: 'São Paulo',
-        nivel: 12,
-        faturamentoBase: 4500,
+        nome: 'Banco do Brasil - Agência Paulista', nomeFantasia: 'Banco do Brasil', descricao: 'Agência bancária com serviços financeiros.', ramo: 'financeiro', cidade: 'São Paulo', estado: 'São Paulo', nivel: 25, faturamentoBase: 12000,
         vagas: [
-            { cargo: 'Motorista de Caminhão', descricao: 'Entregas regionais.', salario: 3200, nivelMinimo: 2 },
-            { cargo: 'Auxiliar de Logística', descricao: 'Separação e carregamento.', salario: 1800, nivelMinimo: 1 }
+            { cargo: 'Escriturário', descricao: 'Serviços bancários internos.', salarioSemanal: 600, categoria: 'entry', requisitos: { nivelMinimo: 1, atributos: { inteligencia: 8, memoria: 5 } } },
+            { cargo: 'Caixa', descricao: 'Atendimento ao público.', salarioSemanal: 550, categoria: 'sociais', requisitos: { nivelMinimo: 2, atributos: { carisma: 12, foco: 10 } } },
+            { cargo: 'Gerente de Contas', descricao: 'Gestão de carteira de clientes.', salarioSemanal: 2500, categoria: 'gerencia', requisitos: { nivelMinimo: 7, atributos: { gestao: 20, negociacao: 15, carisma: 20, inteligencia: 15 } } },
+            { cargo: 'Analista Financeiro', descricao: 'Análise de crédito e investimentos.', salarioSemanal: 1600, categoria: 'mentais', requisitos: { nivelMinimo: 4, atributos: { logica: 20, inteligencia: 20, contabilidade: 10 } } }
         ]
     },
     {
-        nome: 'Banco Central do Brasil - Agência SP',
-        nomeFantasia: 'Banco Central SP',
-        descricao: 'Agência bancária com serviços financeiros completos.',
-        ramo: 'financeiro',
-        cidade: 'São Paulo',
-        estado: 'São Paulo',
-        nivel: 25,
-        faturamentoBase: 12000,
+        nome: 'Transportes Rápidos Ltda', nomeFantasia: 'Transportes Rápidos', descricao: 'Logística e transporte intermunicipal.', ramo: 'transporte', cidade: 'São Paulo', estado: 'São Paulo', nivel: 12, faturamentoBase: 4500,
         vagas: [
-            { cargo: 'Gerente de Contas', descricao: 'Gestão de carteira de clientes premium.', salario: 8000, nivelMinimo: 6 },
-            { cargo: 'Caixa', descricao: 'Atendimento ao público.', salario: 2200, nivelMinimo: 1 },
-            { cargo: 'Analista Financeiro', descricao: 'Análise de crédito e investimentos.', salario: 5000, nivelMinimo: 3 }
-        ]
-    },
-
-    // ==================== CAMPINAS ====================
-    {
-        nome: 'Universidade Estadual de Campinas - Administrativo',
-        nomeFantasia: 'UNICAMP',
-        descricao: 'Setor administrativo da universidade. Vagas para funcionários técnicos.',
-        ramo: 'educacao',
-        cidade: 'Campinas',
-        estado: 'São Paulo',
-        nivel: 30,
-        faturamentoBase: 8000,
-        vagas: [
-            { cargo: 'Assistente Administrativo', descricao: 'Suporte administrativo aos departamentos.', salario: 2800, nivelMinimo: 2 },
-            { cargo: 'Técnico de Laboratório', descricao: 'Suporte a laboratórios de pesquisa.', salario: 3500, nivelMinimo: 3 }
+            { cargo: 'Auxiliar de Logística', descricao: 'Separação e carregamento.', salarioSemanal: 450, categoria: 'entry', requisitos: { nivelMinimo: 1, atributos: { forca: 8 } } },
+            { cargo: 'Motorista de Caminhão', descricao: 'Entregas regionais.', salarioSemanal: 1000, categoria: 'fisicas', requisitos: { nivelMinimo: 3, atributos: { forca: 12, resistencia: 15, foco: 10 } } },
+            { cargo: 'Coordenador de Frota', descricao: 'Gestão de motoristas e rotas.', salarioSemanal: 1700, categoria: 'gerencia', requisitos: { nivelMinimo: 5, atributos: { gestao: 15, lideranca: 10, logica: 15 } } }
         ]
     },
     {
-        nome: 'Bosch do Brasil - Campinas',
-        nomeFantasia: 'Bosch Campinas',
-        descricao: 'Unidade industrial da Bosch com foco em automação e componentes automotivos.',
-        ramo: 'industria',
-        cidade: 'Campinas',
-        estado: 'São Paulo',
-        nivel: 35,
-        faturamentoBase: 15000,
+        nome: 'Restaurante e Lanchonete Metrópole', nomeFantasia: 'Metrópole', descricao: 'Rede de restaurantes populares.', ramo: 'alimenticio', cidade: 'São Paulo', estado: 'São Paulo', nivel: 8, faturamentoBase: 2500,
         vagas: [
-            { cargo: 'Operador de Produção', descricao: 'Linha de montagem automatizada.', salario: 3200, nivelMinimo: 1 },
-            { cargo: 'Engenheiro de Automação', descricao: 'Desenvolvimento de sistemas automatizados.', salario: 8500, nivelMinimo: 5 },
-            { cargo: 'Técnico Mecânico', descricao: 'Manutenção de equipamentos industriais.', salario: 3800, nivelMinimo: 2 }
-        ]
-    },
-    {
-        nome: 'Restaurante e Lanchonete Campineira',
-        nomeFantasia: 'Lanchonete Campineira',
-        descricao: 'Rede de lanchonetes com 3 unidades em Campinas.',
-        ramo: 'alimenticio',
-        cidade: 'Campinas',
-        estado: 'São Paulo',
-        nivel: 5,
-        faturamentoBase: 2000,
-        vagas: [
-            { cargo: 'Atendente', descricao: 'Atendimento ao cliente.', salario: 1400, nivelMinimo: 1 },
-            { cargo: 'Cozinheiro', descricao: 'Preparo de lanches e refeições.', salario: 1800, nivelMinimo: 1 }
+            { cargo: 'Atendente de Lanchonete', descricao: 'Anotar pedidos e servir.', salarioSemanal: 380, categoria: 'entry', requisitos: { nivelMinimo: 1, atributos: { carisma: 5, resistencia: 5 } } },
+            { cargo: 'Cozinheiro', descricao: 'Preparo de refeições.', salarioSemanal: 600, categoria: 'profissionais', requisitos: { nivelMinimo: 2, atributos: { culinaria: 10, foco: 10 } } },
+            { cargo: 'Chef de Cozinha', descricao: 'Coordenação da cozinha e cardápio.', salarioSemanal: 1400, categoria: 'gerencia', requisitos: { nivelMinimo: 4, atributos: { culinaria: 20, gestao: 10, criatividade: 15 } } }
         ]
     },
 
     // ==================== RIO DE JANEIRO ====================
     {
-        nome: 'Petrobras - Sede Rio',
-        nomeFantasia: 'Petrobras',
-        descricao: 'Sede administrativa da Petrobras no Rio de Janeiro.',
-        ramo: 'industria',
-        cidade: 'Rio de Janeiro',
-        estado: 'Rio de Janeiro',
-        nivel: 50,
-        faturamentoBase: 25000,
+        nome: 'Rede Globo de Televisão', nomeFantasia: 'TV Globo', descricao: 'Maior emissora de TV do Brasil.', ramo: 'entretenimento', cidade: 'Rio de Janeiro', estado: 'Rio de Janeiro', nivel: 40, faturamentoBase: 20000,
         vagas: [
-            { cargo: 'Engenheiro de Petróleo', descricao: 'Exploração e produção.', salario: 12000, nivelMinimo: 8 },
-            { cargo: 'Técnico de Segurança', descricao: 'Segurança do trabalho industrial.', salario: 4500, nivelMinimo: 3 },
-            { cargo: 'Analista Administrativo', descricao: 'Gestão de contratos e licitações.', salario: 6000, nivelMinimo: 4 }
+            { cargo: 'Office Boy', descricao: 'Serviços internos de entregas.', salarioSemanal: 350, categoria: 'entry', requisitos: { nivelMinimo: 1, atributos: { velocidade: 8 } } },
+            { cargo: 'Editor de Vídeo', descricao: 'Edição e pós-produção.', salarioSemanal: 1000, categoria: 'profissionais', requisitos: { nivelMinimo: 3, atributos: { design: 15, criatividade: 15, foco: 10 } } },
+            { cargo: 'Produtor de Conteúdo', descricao: 'Produção de programas e séries.', salarioSemanal: 1700, categoria: 'gerencia', requisitos: { nivelMinimo: 5, atributos: { gestao: 15, criatividade: 20, lideranca: 10 } } },
+            { cargo: 'Repórter', descricao: 'Apuração e apresentação de notícias.', salarioSemanal: 1400, categoria: 'sociais', requisitos: { nivelMinimo: 4, atributos: { carisma: 20, persuasao: 15, escrita: 15 } } }
         ]
     },
     {
-        nome: 'Rede Globo de Televisão',
-        nomeFantasia: 'TV Globo',
-        descricao: 'Emissora de televisão com sede no Jardim Botânico.',
-        ramo: 'entretenimento',
-        cidade: 'Rio de Janeiro',
-        estado: 'Rio de Janeiro',
-        nivel: 40,
-        faturamentoBase: 20000,
+        nome: 'Hotel Copacabana Palace', nomeFantasia: 'Copacabana Palace', descricao: 'Hotel 5 estrelas em Copacabana.', ramo: 'servicos', cidade: 'Rio de Janeiro', estado: 'Rio de Janeiro', nivel: 20, faturamentoBase: 8000,
         vagas: [
-            { cargo: 'Produtor de Conteúdo', descricao: 'Produção de programas e séries.', salario: 5500, nivelMinimo: 4 },
-            { cargo: 'Editor de Vídeo', descricao: 'Edição e pós-produção.', salario: 3800, nivelMinimo: 3 },
-            { cargo: 'Assistente de Palco', descricao: 'Suporte a gravações ao vivo.', salario: 2200, nivelMinimo: 1 }
+            { cargo: 'Camareira', descricao: 'Limpeza e arrumação dos quartos.', salarioSemanal: 450, categoria: 'entry', requisitos: { nivelMinimo: 1, atributos: { resistencia: 8 } } },
+            { cargo: 'Recepcionista Bilíngue', descricao: 'Check-in e atendimento a hóspedes.', salarioSemanal: 700, categoria: 'sociais', requisitos: { nivelMinimo: 2, atributos: { carisma: 18, memoria: 10 } } },
+            { cargo: 'Chef de Cozinha', descricao: 'Comando da cozinha do hotel.', salarioSemanal: 2000, categoria: 'gerencia', requisitos: { nivelMinimo: 6, atributos: { culinaria: 30, gestao: 20, lideranca: 15 } } },
+            { cargo: 'Segurança', descricao: 'Vigilância e segurança patrimonial.', salarioSemanal: 600, categoria: 'fisicas', requisitos: { nivelMinimo: 2, atributos: { forca: 15, resistencia: 15, agilidade: 10 } } }
         ]
     },
     {
-        nome: 'Hotel Copacabana Palace',
-        nomeFantasia: 'Copacabana Palace',
-        descricao: 'Hotel 5 estrelas histórico na orla de Copacabana.',
-        ramo: 'servicos',
-        cidade: 'Rio de Janeiro',
-        estado: 'Rio de Janeiro',
-        nivel: 20,
-        faturamentoBase: 8000,
+        nome: 'Petrobras - Sede Rio', nomeFantasia: 'Petrobras', descricao: 'Sede administrativa da Petrobras.', ramo: 'industria', cidade: 'Rio de Janeiro', estado: 'Rio de Janeiro', nivel: 50, faturamentoBase: 25000,
         vagas: [
-            { cargo: 'Recepcionista Bilíngue', descricao: 'Check-in e atendimento a hóspedes.', salario: 2800, nivelMinimo: 2 },
-            { cargo: 'Camareira', descricao: 'Limpeza e arrumação dos quartos.', salario: 1800, nivelMinimo: 1 },
-            { cargo: 'Chef de Cozinha', descricao: 'Coordenação da cozinha do hotel.', salario: 6500, nivelMinimo: 5 }
+            { cargo: 'Auxiliar Administrativo', descricao: 'Suporte administrativo.', salarioSemanal: 600, categoria: 'entry', requisitos: { nivelMinimo: 1, atributos: { inteligencia: 8, organizacao: 5 } } },
+            { cargo: 'Técnico de Segurança do Trabalho', descricao: 'Inspeções e normas de segurança.', salarioSemanal: 1100, categoria: 'profissionais', requisitos: { nivelMinimo: 3, atributos: { foco: 18, memoria: 15 } } },
+            { cargo: 'Engenheiro de Petróleo', descricao: 'Exploração e produção.', salarioSemanal: 3800, categoria: 'profissionais', requisitos: { nivelMinimo: 8, atributos: { inteligencia: 35, logica: 30, programacao: 10 } } }
+        ]
+    },
+
+    // ==================== CAMPINAS ====================
+    {
+        nome: 'Bosch do Brasil - Campinas', nomeFantasia: 'Bosch Campinas', descricao: 'Unidade industrial de automação.', ramo: 'industria', cidade: 'Campinas', estado: 'São Paulo', nivel: 35, faturamentoBase: 15000,
+        vagas: [
+            { cargo: 'Operador de Produção', descricao: 'Linha de montagem.', salarioSemanal: 700, categoria: 'fisicas', requisitos: { nivelMinimo: 2, atributos: { forca: 12, resistencia: 10, foco: 10 } } },
+            { cargo: 'Técnico Mecânico', descricao: 'Manutenção de equipamentos.', salarioSemanal: 1100, categoria: 'profissionais', requisitos: { nivelMinimo: 3, atributos: { logica: 15, inteligencia: 12 } } },
+            { cargo: 'Engenheiro de Automação', descricao: 'Sistemas automatizados.', salarioSemanal: 2600, categoria: 'profissionais', requisitos: { nivelMinimo: 6, atributos: { programacao: 20, logica: 25, inteligencia: 20 } } }
         ]
     },
     {
-        nome: 'Porto do Rio de Janeiro',
-        nomeFantasia: 'Porto do Rio',
-        descricao: 'Administração do porto e operações logísticas.',
-        ramo: 'transporte',
-        cidade: 'Rio de Janeiro',
-        estado: 'Rio de Janeiro',
-        nivel: 15,
-        faturamentoBase: 7000,
+        nome: 'UNICAMP - Departamento Administrativo', nomeFantasia: 'UNICAMP', descricao: 'Setor administrativo da universidade.', ramo: 'educacao', cidade: 'Campinas', estado: 'São Paulo', nivel: 30, faturamentoBase: 7000,
         vagas: [
-            { cargo: 'Operador Portuário', descricao: 'Operação de carga e descarga.', salario: 3500, nivelMinimo: 2 },
-            { cargo: 'Analista de Importação', descricao: 'Processos de importação e exportação.', salario: 4500, nivelMinimo: 3 }
+            { cargo: 'Assistente Administrativo', descricao: 'Suporte aos departamentos.', salarioSemanal: 700, categoria: 'mentais', requisitos: { nivelMinimo: 2, atributos: { inteligencia: 10, memoria: 12, organizacao: 10 } } },
+            { cargo: 'Professor Substituto', descricao: 'Aulas de nível superior.', salarioSemanal: 1400, categoria: 'mentais', requisitos: { nivelMinimo: 4, atributos: { inteligencia: 25, carisma: 15, comunicacao: 15 } } },
+            { cargo: 'Técnico de Laboratório', descricao: 'Suporte a laboratórios.', salarioSemanal: 900, categoria: 'profissionais', requisitos: { nivelMinimo: 3, atributos: { logica: 15, foco: 15 } } }
         ]
     },
 
     // ==================== SANTOS ====================
     {
-        nome: 'Porto de Santos Autoridade Portuária',
-        nomeFantasia: 'Porto de Santos',
-        descricao: 'Maior porto da América Latina. Administração e operações.',
-        ramo: 'transporte',
-        cidade: 'Santos',
-        estado: 'São Paulo',
-        nivel: 30,
-        faturamentoBase: 12000,
+        nome: 'Porto de Santos Autoridade Portuária', nomeFantasia: 'Porto de Santos', descricao: 'Maior porto da América Latina.', ramo: 'transporte', cidade: 'Santos', estado: 'São Paulo', nivel: 30, faturamentoBase: 12000,
         vagas: [
-            { cargo: 'Operador de Equipamentos', descricao: 'Operação de guindastes e empilhadeiras.', salario: 3800, nivelMinimo: 2 },
-            { cargo: 'Analista Portuário', descricao: 'Gestão de documentação e cargas.', salario: 5000, nivelMinimo: 3 },
-            { cargo: 'Vigia Portuário', descricao: 'Segurança patrimonial.', salario: 1800, nivelMinimo: 1 }
+            { cargo: 'Vigia Portuário', descricao: 'Segurança patrimonial.', salarioSemanal: 450, categoria: 'entry', requisitos: { nivelMinimo: 1, atributos: { resistencia: 8, foco: 5 } } },
+            { cargo: 'Operador de Empilhadeira', descricao: 'Movimentação de cargas.', salarioSemanal: 800, categoria: 'fisicas', requisitos: { nivelMinimo: 2, atributos: { forca: 15, foco: 12 } } },
+            { cargo: 'Analista Portuário', descricao: 'Gestão de documentação.', salarioSemanal: 1500, categoria: 'mentais', requisitos: { nivelMinimo: 4, atributos: { logica: 20, inteligencia: 15, memoria: 15 } } }
+        ]
+    },
+    {
+        nome: 'Companhia Docas de Santos', nomeFantasia: 'Docas Santos', descricao: 'Administração do porto organizado.', ramo: 'servicos', cidade: 'Santos', estado: 'São Paulo', nivel: 22, faturamentoBase: 9000,
+        vagas: [
+            { cargo: 'Office Boy', descricao: 'Serviços internos.', salarioSemanal: 380, categoria: 'entry', requisitos: { nivelMinimo: 1, atributos: { velocidade: 6 } } },
+            { cargo: 'Almoxarife', descricao: 'Controle de estoque e materiais.', salarioSemanal: 600, categoria: 'mentais', requisitos: { nivelMinimo: 2, atributos: { memoria: 12, organizacao: 10 } } },
+            { cargo: 'Supervisor de Turno', descricao: 'Coordenação de equipe portuária.', salarioSemanal: 1800, categoria: 'gerencia', requisitos: { nivelMinimo: 5, atributos: { lideranca: 18, gestao: 15, resistencia: 12 } } }
         ]
     }
 ];
@@ -229,8 +149,12 @@ async function seedEmpresas() {
         const vagas = data.vagas.map(v => ({
             cargo: v.cargo,
             descricao: v.descricao,
-            salario: v.salario,
-            requisitos: { nivelMinimo: v.nivelMinimo },
+            salario: v.salarioSemanal,
+            categoria: v.categoria,
+            requisitos: {
+                nivelMinimo: v.requisitos.nivelMinimo,
+                atributos: v.requisitos.atributos || {}
+            },
             status: 'aberta',
             candidatos: []
         }));
@@ -243,15 +167,13 @@ async function seedEmpresas() {
             dono: null,
             nivel: data.nivel,
             experiencia: (data.nivel - 1) * 1000,
-            faturamentoMensal: data.faturamentoBase * (1 + (data.nivel - 1) * 0.1),
             reputacao: 70,
             unidades: [{
                 nome: 'Sede',
                 pais: 'Brasil',
                 estado: data.estado,
                 cidade: data.cidade,
-                endereco: '',
-                capacidadeMaxima: 20,
+                capacidadeMaxima: 30,
                 nivel: Math.ceil(data.nivel / 5),
                 faturamentoBase: data.faturamentoBase
             }],
@@ -263,8 +185,8 @@ async function seedEmpresas() {
         console.log(`[SEED] Empresa criada: ${data.nome} (${data.cidade})`);
     }
 
-    console.log(`[SEED] ${contador} empresas criadas. Total: ${empresasData.length}`);
+    console.log(`[SEED] ${contador} empresas criadas de ${empresasData.length}`);
     return contador;
 }
 
-module.exports = { seedEmpresas, empresasData };
+module.exports = { seedEmpresas };

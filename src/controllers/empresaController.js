@@ -98,9 +98,31 @@ async function candidatarVaga(empresaId, vagaId, playerId) {
         const player = await Player.findById(playerId);
         if (!player) return { sucesso: false, erro: 'Personagem não encontrado' };
 
-        const nivelPlayer = player.habilidades?.estatisticas?.nivelMedio || 1;
+        const hab = player.habilidades;
+        const nivelPlayer = hab?.estatisticas?.nivelMedio || 1;
+
         if (nivelPlayer < vaga.requisitos.nivelMinimo) {
             return { sucesso: false, erro: `Requer nível mínimo ${vaga.requisitos.nivelMinimo}. Seu nível: ${nivelPlayer}` };
+        }
+
+        const reqAtributos = vaga.requisitos?.atributos || {};
+        const atributosFaltando = [];
+
+        for (const [attr, nivelNeeded] of Object.entries(reqAtributos)) {
+            let nivelAtual = 0;
+            const caminhos = attr.split('.');
+            if (caminhos.length === 2) {
+                nivelAtual = hab?.[caminhos[0]]?.[caminhos[1]]?.nivel || 0;
+            } else if (caminhos.length === 1) {
+                nivelAtual = hab?.fisicas?.[attr]?.nivel || hab?.mentais?.[attr]?.nivel || hab?.sociais?.[attr]?.nivel || hab?.profissionais?.[attr]?.nivel || 0;
+            }
+            if (nivelAtual < nivelNeeded) {
+                atributosFaltando.push(`${attr} (${nivelAtual}/${nivelNeeded})`);
+            }
+        }
+
+        if (atributosFaltando.length > 0) {
+            return { sucesso: false, erro: `Atributos insuficientes: ${atributosFaltando.join(', ')}` };
         }
 
         // Se empresa é NPC (sem dono), contrata automaticamente
@@ -125,12 +147,13 @@ async function candidatarVaga(empresaId, vagaId, playerId) {
             player.economia.empresaId = empresa._id;
             player.economia.cargo = vaga.cargo;
             player.economia.salario = vaga.salario;
+            player.economia.ultimoPagamentoSalario = null;
             await player.save();
 
             return {
                 sucesso: true,
                 contratado: true,
-                mensagem: `🎉 Contratado como ${vaga.cargo} na ${empresa.nomeFantasia || empresa.nome}! Salário: R$ ${vaga.salario}/mês`,
+                mensagem: `🎉 Contratado como ${vaga.cargo} na ${empresa.nomeFantasia || empresa.nome}! Salário: R$ ${vaga.salario}/semana`,
                 cargo: vaga.cargo,
                 empresa: empresa.nomeFantasia || empresa.nome,
                 empresaId: empresa._id,
@@ -138,7 +161,7 @@ async function candidatarVaga(empresaId, vagaId, playerId) {
             };
         }
 
-        // Empresa de jogador: só adiciona como candidato
+        // Empresa de jogador: adiciona como candidato
         if (vaga.candidatos.includes(playerId)) {
             return { sucesso: false, erro: 'Você já se candidatou a esta vaga' };
         }
@@ -146,7 +169,7 @@ async function candidatarVaga(empresaId, vagaId, playerId) {
         vaga.candidatos.push(playerId);
         await empresa.save();
 
-        return { sucesso: true, mensagem: 'Candidatura enviada com sucesso! Aguarde o dono da empresa analisar.' };
+        return { sucesso: true, mensagem: 'Candidatura enviada! Aguarde o dono analisar.' };
     } catch (erro) {
         return { sucesso: false, erro: erro.message };
     }
@@ -257,6 +280,8 @@ async function processarSalarios() {
     try {
         const empresas = await Empresa.find({ ativa: true });
         let totalPago = 0;
+        const agora = new Date();
+        const UMA_SEMANA_MS = 7 * 60 * 1000; // 7 minutos (1 tick = 1 min, 1 semana = 7 ticks)
 
         for (const empresa of empresas) {
             for (const unidade of empresa.unidades || []) {
@@ -266,11 +291,46 @@ async function processarSalarios() {
                     const player = await Player.findById(func.playerId);
                     if (!player) continue;
 
+                    const ultimoPagamento = player.economia?.ultimoPagamentoSalario;
+                    const podePagar = !ultimoPagamento || (agora.getTime() - new Date(ultimoPagamento).getTime()) >= UMA_SEMANA_MS;
+
+                    if (!podePagar) continue;
+
                     player.economia.dinheiroVivo += func.salario;
-                    func.ultimoPagamento = new Date();
+                    player.economia.ultimoPagamentoSalario = agora;
+                    func.ultimoPagamento = agora;
                     await player.save();
                     totalPago += func.salario;
                 }
+            }
+
+            empresa.faturamentoMensal = empresa.calcularFaturamento();
+            empresa.despesasFixas = empresa.calcularDespesas();
+            empresa.lucroMensal = empresa.faturamentoMensal - empresa.despesasFixas;
+
+            if (empresa.lucroMensal > 0 && empresa.dono) {
+                const dono = await Player.findById(empresa.dono);
+                if (dono) {
+                    dono.economia.dinheiroVivo += Math.round(empresa.lucroMensal * 0.5);
+                    empresa.saldoConta += Math.round(empresa.lucroMensal * 0.5);
+                    await dono.save();
+                }
+            }
+
+            if (empresa.faturamentoMensal > empresa.maiorFaturamentoMensal) {
+                empresa.maiorFaturamentoMensal = empresa.faturamentoMensal;
+            }
+
+            empresa.experiencia += Math.round(empresa.faturamentoMensal / 100);
+            empresa.nivel = Math.min(100, Math.floor(empresa.experiencia / 1000) + 1);
+            await empresa.save();
+        }
+
+        return { sucesso: true, totalPago };
+    } catch (erro) {
+        return { sucesso: false, erro: erro.message };
+    }
+}
             }
 
             empresa.faturamentoMensal = empresa.calcularFaturamento();
@@ -324,6 +384,7 @@ async function listarVagasDisponiveis(pais, estado, cidade) {
                         cargo: vaga.cargo,
                         descricao: vaga.descricao,
                         salario: vaga.salario,
+                        categoria: vaga.categoria || 'entry',
                         requisitos: vaga.requisitos,
                         totalCandidatos: vaga.candidatos?.length || 0
                     });

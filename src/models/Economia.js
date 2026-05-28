@@ -113,6 +113,7 @@ const EconomiaSchema = new mongoose.Schema({
     empresaId: { type: mongoose.Schema.Types.ObjectId, ref: 'Empresa', default: null },
     cargo: { type: String, default: null },
     salario: { type: Number, default: 0 },
+    ultimoPagamentoSalario: { type: Date, default: null },
 
     // ==================== RENDA ====================
     salarioDetalhes: SalarioSchema,
