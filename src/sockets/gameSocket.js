@@ -86,7 +86,7 @@ function configurarSockets(io) {
         configurarIdiomasSocket(io, socket);
         configurarLocalizacaoSocket(io, socket);
         configurarEconomiaSocket(io, socket);
-        configurarSocialSocket(io, socket);
+        configurarSocialSocket(io, socket, context);
         configurarInventarioSocket(io, socket);
         configurarEmpresaSocket(io, socket, context);
 

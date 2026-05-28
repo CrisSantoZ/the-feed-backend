@@ -1,7 +1,8 @@
 const Player = require('../models/Player');
 const PlayerController = require('../controllers/playerController');
 
-function configurarSocialSocket(io, socket) {
+function configurarSocialSocket(io, socket, context) {
+    const getPlayerId = () => context?.session?.playerId || null;
     
     // Enviar convite de amizade
     socket.on('convidarAmigo', async (data) => {
@@ -40,7 +41,9 @@ function configurarSocialSocket(io, socket) {
     socket.on('mensagemPrivada', async (data) => {
         const { destinoId, mensagem } = data;
         
-        const player = await Player.findById(socket.playerId);
+        const playerId = getPlayerId();
+        if (!playerId) return;
+        const player = await Player.findById(playerId);
         
         if (player) {
             io.to(`player_${destinoId}`).emit('mensagemPrivada', {
@@ -55,7 +58,9 @@ function configurarSocialSocket(io, socket) {
     socket.on('mensagemLocal', async (data) => {
         const { localId, mensagem } = data;
         
-        const player = await Player.findById(socket.playerId);
+        const playerId = getPlayerId();
+        if (!playerId) return;
+        const player = await Player.findById(playerId);
         
         if (player) {
             socket.to(`local_${localId}`).emit('mensagemLocal', {

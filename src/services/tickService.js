@@ -149,7 +149,7 @@ async function processarJogador(player, io) {
             if (playerAtualizado.necessidades && !ignorarDegradacao) {
                 const dano = playerAtualizado.necessidades.getEfeitosNaSaude();
                 if (dano > 0) {
-                    playerAtualizado.saude.aplicarDano('geral', 'degradacao', dano);
+                    playerAtualizado.saude.geral = Math.max(0, playerAtualizado.saude.geral - dano);
                     houveMudanca = true;
                     
                     if (dano >= 5) {
@@ -221,11 +221,9 @@ async function processarJogador(player, io) {
                         social: playerAtualizado.necessidades.social,
                         lazer: playerAtualizado.necessidades.lazer
                     } : null,
-                    saude: playerAtualizado.saude ? {
-                        geral: playerAtualizado.saude.geral,
-                        consciente: playerAtualizado.saude.consciente,
-                        sinais: playerAtualizado.saude.sinaisVitais
-                    } : null,
+                    saude: playerAtualizado.saude ? playerAtualizado.saude.geral : 100,
+                    nivel: playerAtualizado.habilidades?.estatisticas?.nivelMedio || 1,
+                    xp: playerAtualizado.habilidades?.estatisticas?.totalXP || 0,
                     economia: playerAtualizado.economia ? {
                         dinheiro: playerAtualizado.economia.dinheiroVivo,
                         patrimonio: playerAtualizado.economia.patrimonioTotal

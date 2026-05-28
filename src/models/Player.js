@@ -165,6 +165,7 @@ PlayerSchema.methods.getResumoCompleto = function () {
 
         // Nível médio
         nivel: this.habilidades?.estatisticas?.nivelMedio || 1,
+        xp: this.habilidades?.estatisticas?.totalXP || 0,
 
         // Financeiro
         patrimonio: this.economia?.patrimonioTotal || 0,
