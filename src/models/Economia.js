@@ -109,8 +109,13 @@ const EconomiaSchema = new mongoose.Schema({
     patrimonio: [PropriedadeFinanceiraSchema],
     patrimonioTotal: { type: Number, default: 0 },
     
+    // ==================== EMPREGO / EMPRESA ====================
+    empresaId: { type: mongoose.Schema.Types.ObjectId, ref: 'Empresa', default: null },
+    cargo: { type: String, default: null },
+    salario: { type: Number, default: 0 },
+
     // ==================== RENDA ====================
-    salario: SalarioSchema,
+    salarioDetalhes: SalarioSchema,
     rendaPassiva: { type: Number, default: 0 },
     fontesRenda: [{
         nome: String,

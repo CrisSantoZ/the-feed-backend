@@ -8,6 +8,7 @@ const { configurarEconomiaSocket } = require('./economiaSocket');
 const { configurarSocialSocket } = require('./socialSocket');
 const { configurarInventarioSocket } = require('./inventarioSocket');
 const { configurarFaceclaimSocket } = require('./faceclaimSocket');
+const { configurarEmpresaSocket } = require('./empresaSocket');
 
 function configurarTodosSockets(io, socket, context) {
     configurarAuthSocket(io, socket, context);
@@ -20,6 +21,7 @@ function configurarTodosSockets(io, socket, context) {
     configurarSocialSocket(io, socket);
     configurarInventarioSocket(io, socket);
     configurarFaceclaimSocket(io, socket, context);
+    configurarEmpresaSocket(io, socket, context);
 }
 
 module.exports = { configurarTodosSockets };

@@ -173,6 +173,11 @@ PlayerSchema.methods.getResumoCompleto = function () {
         amigos: this.social?.estatisticas?.totalAmigos || 0,
         popularidade: this.social?.estatisticas?.popularidade || 0,
 
+        // Emprego
+        cargo: this.economia?.cargo || null,
+        empresa: this.economia?.empresaId || null,
+        salario: this.economia?.salario || 0,
+
         // Online
         online: this.online,
         ultimoLogin: this.ultimoLogin

@@ -4,6 +4,7 @@
    ========================================================================== */
 
 const Player = require('../models/Player');
+const EmpresaController = require('../controllers/empresaController');
 
 let tickInterval = null;
 let jogadoresAtivos = new Map(); // playerId -> ultimoTick
@@ -52,6 +53,11 @@ async function processarTick(io) {
             await processarJogador(player, io);
         }
         
+        // Processa salários de empresas (a cada 10 ticks = 10 min)
+        if (Math.floor(Date.now() / 60000) % 10 === 0) {
+            await EmpresaController.processarSalarios();
+        }
+
         const duracao = Date.now() - inicio;
         console.log(`[TICK] Processado em ${duracao}ms`);
         
