@@ -336,36 +336,6 @@ async function processarSalarios() {
         return { sucesso: false, erro: erro.message };
     }
 }
-            }
-
-            empresa.faturamentoMensal = empresa.calcularFaturamento();
-            empresa.despesasFixas = empresa.calcularDespesas();
-            empresa.lucroMensal = empresa.faturamentoMensal - empresa.despesasFixas;
-
-            if (empresa.lucroMensal > 0 && empresa.dono) {
-                const dono = await Player.findById(empresa.dono);
-                if (dono) {
-                    dono.economia.dinheiroVivo += Math.round(empresa.lucroMensal * 0.5);
-                    empresa.saldoConta += Math.round(empresa.lucroMensal * 0.5);
-                    await dono.save();
-                }
-            }
-
-            if (empresa.faturamentoMensal > empresa.maiorFaturamentoMensal) {
-                empresa.maiorFaturamentoMensal = empresa.faturamentoMensal;
-            }
-
-            empresa.experiencia += Math.round(empresa.faturamentoMensal / 100);
-            empresa.nivel = Math.min(100, Math.floor(empresa.experiencia / 1000) + 1);
-
-            await empresa.save();
-        }
-
-        return { sucesso: true, totalPago };
-    } catch (erro) {
-        return { sucesso: false, erro: erro.message };
-    }
-}
 
 async function listarVagasDisponiveis(pais, estado, cidade) {
     try {
