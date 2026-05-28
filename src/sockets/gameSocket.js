@@ -19,6 +19,7 @@ const { configurarEconomiaSocket } = require('./economiaSocket');
 const { configurarSocialSocket } = require('./socialSocket');
 const { configurarInventarioSocket } = require('./inventarioSocket');
 const { configurarFaceclaimSocket } = require('./faceclaimSocket');
+const { configurarEmpresaSocket } = require('./empresaSocket');
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
@@ -83,6 +84,7 @@ function configurarSockets(io) {
         configurarEconomiaSocket(io, socket);
         configurarSocialSocket(io, socket);
         configurarInventarioSocket(io, socket);
+        configurarEmpresaSocket(io, socket, { playerId: playerIdAtual, playerSockets: new Map() });
 
         // ==================== DESCONEXÃO ====================
         socket.on('disconnect', async () => {
