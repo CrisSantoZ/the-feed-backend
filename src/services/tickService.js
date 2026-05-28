@@ -53,7 +53,7 @@ async function processarTick(io) {
             await processarJogador(player, io);
         }
         
-        // Processa salários de empresas (a cada 10 ticks = 10 min)
+        // Processa salários de empresas (a cada 10 ticks, verifica se passou 7 dias reais)
         if (Math.floor(Date.now() / 60000) % 10 === 0) {
             await EmpresaController.processarSalarios();
         }

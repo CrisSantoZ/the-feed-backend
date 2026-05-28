@@ -132,6 +132,65 @@ const empresasData = [
             { cargo: 'Almoxarife', descricao: 'Controle de estoque e materiais.', salarioSemanal: 600, categoria: 'mentais', requisitos: { nivelMinimo: 2, atributos: { memoria: 12, foco: 10 } } },
             { cargo: 'Supervisor de Turno', descricao: 'Coordenação de equipe portuária.', salarioSemanal: 1800, categoria: 'gerencia', requisitos: { nivelMinimo: 5, atributos: { lideranca: 18, gestao: 15, resistencia: 12 } } }
         ]
+    },
+
+    // ==================== BELO HORIZONTE ====================
+    {
+        nome: 'Vale do Rio Doce - BH', nomeFantasia: 'Vale', descricao: 'Uma das maiores mineradoras do mundo, escritório administrativo em BH.', ramo: 'industria', cidade: 'Belo Horizonte', estado: 'Minas Gerais', nivel: 45, faturamentoBase: 20000,
+        vagas: [
+            { cargo: 'Auxiliar de Almoxarifado', descricao: 'Controle de estoque e materiais.', salarioSemanal: 500, categoria: 'entry', requisitos: { nivelMinimo: 1, atributos: { forca: 6, memoria: 5 } } },
+            { cargo: 'Técnico de Mineração', descricao: 'Operação e manutenção de equipamentos de mina.', salarioSemanal: 1200, categoria: 'fisicas', requisitos: { nivelMinimo: 3, atributos: { forca: 20, resistencia: 18, foco: 15 } } },
+            { cargo: 'Analista de Geologia', descricao: 'Análise de solo e prospecção mineral.', salarioSemanal: 2200, categoria: 'mentais', requisitos: { nivelMinimo: 5, atributos: { inteligencia: 25, logica: 20, memoria: 15 } } },
+            { cargo: 'Engenheiro de Minas', descricao: 'Coordenação de operações de lavra.', salarioSemanal: 3500, categoria: 'profissionais', requisitos: { nivelMinimo: 7, atributos: { inteligencia: 30, gestao: 15, logica: 25 } } }
+        ]
+    },
+    {
+        nome: 'Hospital Mater Dei', nomeFantasia: 'Mater Dei', descricao: 'Rede de hospitais particular de Belo Horizonte.', ramo: 'saude', cidade: 'Belo Horizonte', estado: 'Minas Gerais', nivel: 25, faturamentoBase: 10000,
+        vagas: [
+            { cargo: 'Maqueiro', descricao: 'Transporte de pacientes.', salarioSemanal: 450, categoria: 'fisicas', requisitos: { nivelMinimo: 1, atributos: { forca: 12, resistencia: 10 } } },
+            { cargo: 'Enfermeiro Plantonista', descricao: 'Assistência em enfermaria.', salarioSemanal: 1200, categoria: 'profissionais', requisitos: { nivelMinimo: 3, atributos: { foco: 20, resistencia: 15, empatia: 15 } } },
+            { cargo: 'Recepcionista Hospitalar', descricao: 'Atendimento ao público e agendamento.', salarioSemanal: 500, categoria: 'sociais', requisitos: { nivelMinimo: 1, atributos: { carisma: 12, memoria: 8 } } }
+        ]
+    },
+
+    // ==================== SALVADOR ====================
+    {
+        nome: 'Rede Bahia de Comunicação', nomeFantasia: 'Rede Bahia', descricao: 'Maior grupo de comunicação do Nordeste, afiliada Globo.', ramo: 'entretenimento', cidade: 'Salvador', estado: 'Bahia', nivel: 20, faturamentoBase: 7000,
+        vagas: [
+            { cargo: 'Office Boy', descricao: 'Serviços internos.', salarioSemanal: 380, categoria: 'entry', requisitos: { nivelMinimo: 1, atributos: { velocidade: 6 } } },
+            { cargo: 'Repórter de TV', descricao: 'Apuração e reportagem ao vivo.', salarioSemanal: 1500, categoria: 'sociais', requisitos: { nivelMinimo: 4, atributos: { carisma: 22, persuasao: 15, escrita: 18 } } },
+            { cargo: 'Editor de Conteúdo Digital', descricao: 'Produção para redes sociais e site.', salarioSemanal: 900, categoria: 'profissionais', requisitos: { nivelMinimo: 3, atributos: { design: 15, criatividade: 18 } } },
+            { cargo: 'Coordenador de Jornalismo', descricao: 'Gestão da equipe de reportagem.', salarioSemanal: 2400, categoria: 'gerencia', requisitos: { nivelMinimo: 6, atributos: { gestao: 20, lideranca: 18, carisma: 15 } } }
+        ]
+    },
+    {
+        nome: 'Shoptime Salvador', nomeFantasia: 'Shoptime BA', descricao: 'Rede de lojas de departamento no Shopping Barra.', ramo: 'comercio', cidade: 'Salvador', estado: 'Bahia', nivel: 12, faturamentoBase: 3500,
+        vagas: [
+            { cargo: 'Vendedor de Loja', descricao: 'Atendimento ao cliente em loja física.', salarioSemanal: 450, categoria: 'sociais', requisitos: { nivelMinimo: 1, atributos: { carisma: 10, persuasao: 8 } } },
+            { cargo: 'Repositor de Estoque', descricao: 'Organização de mercadorias.', salarioSemanal: 500, categoria: 'fisicas', requisitos: { nivelMinimo: 1, atributos: { forca: 10, resistencia: 8 } } },
+            { cargo: 'Caixa de Loja', descricao: 'Operação de caixa e atendimento.', salarioSemanal: 400, categoria: 'entry', requisitos: { nivelMinimo: 1, atributos: { memoria: 5, foco: 5 } } },
+            { cargo: 'Gerente de Loja', descricao: 'Gestão da unidade e equipe.', salarioSemanal: 2000, categoria: 'gerencia', requisitos: { nivelMinimo: 5, atributos: { gestao: 18, lideranca: 15, negociacao: 12 } } }
+        ]
+    },
+
+    // ==================== CURITIBA ====================
+    {
+        nome: 'Volvo do Brasil - Curitiba', nomeFantasia: 'Volvo Curitiba', descricao: 'Fábrica de caminhões e ônibus da Volvo na CIC.', ramo: 'industria', cidade: 'Curitiba', estado: 'Paraná', nivel: 35, faturamentoBase: 18000,
+        vagas: [
+            { cargo: 'Montador de Linha de Produção', descricao: 'Montagem de componentes automotivos.', salarioSemanal: 750, categoria: 'fisicas', requisitos: { nivelMinimo: 2, atributos: { forca: 14, resistencia: 12, foco: 10 } } },
+            { cargo: 'Técnico em Soldagem', descricao: 'Soldagem de chassis e estruturas.', salarioSemanal: 1000, categoria: 'profissionais', requisitos: { nivelMinimo: 3, atributos: { foco: 15, resistencia: 12 } } },
+            { cargo: 'Analista de Qualidade', descricao: 'Inspeção e controle de qualidade.', salarioSemanal: 1600, categoria: 'mentais', requisitos: { nivelMinimo: 4, atributos: { logica: 20, foco: 18, memoria: 12 } } },
+            { cargo: 'Supervisor de Produção', descricao: 'Coordenação de turno fabril.', salarioSemanal: 2800, categoria: 'gerencia', requisitos: { nivelMinimo: 6, atributos: { gestao: 20, lideranca: 18, resistencia: 15 } } }
+        ]
+    },
+    {
+        nome: 'Mercado Municipal de Curitiba', nomeFantasia: 'Mercado Municipal', descricao: 'Tradicional mercado de Curitiba com diversos setores.', ramo: 'alimenticio', cidade: 'Curitiba', estado: 'Paraná', nivel: 15, faturamentoBase: 4500,
+        vagas: [
+            { cargo: 'Atendente de Mercado', descricao: 'Atendimento aos clientes e reposição.', salarioSemanal: 400, categoria: 'entry', requisitos: { nivelMinimo: 1, atributos: { carisma: 6, resistencia: 5 } } },
+            { cargo: 'Açougueiro', descricao: 'Corte e preparo de carnes.', salarioSemanal: 700, categoria: 'fisicas', requisitos: { nivelMinimo: 2, atributos: { forca: 14, resistencia: 10 } } },
+            { cargo: 'Promotor de Vendas', descricao: 'Divulgação de produtos e degustação.', salarioSemanal: 500, categoria: 'sociais', requisitos: { nivelMinimo: 1, atributos: { carisma: 14, persuasao: 10 } } },
+            { cargo: 'Confeiteiro', descricao: 'Preparo de doces e sobremesas.', salarioSemanal: 800, categoria: 'profissionais', requisitos: { nivelMinimo: 2, atributos: { culinaria: 15, criatividade: 12 } } }
+        ]
     }
 ];
 

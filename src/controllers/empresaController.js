@@ -288,7 +288,7 @@ async function processarSalarios() {
         const empresas = await Empresa.find({ ativa: true });
         let totalPago = 0;
         const agora = new Date();
-        const UMA_SEMANA_MS = 7 * 60 * 1000; // 7 minutos (1 tick = 1 min, 1 semana = 7 ticks)
+        const UMA_SEMANA_MS = 7 * 24 * 60 * 60 * 1000; // 7 dias reais
 
         for (const empresa of empresas) {
             for (const unidade of empresa.unidades || []) {
