@@ -62,10 +62,10 @@ function configurarEmpresaSocket(io, socket, context) {
         }
     });
 
-    socket.on('demitirFuncionario', async (funcionarioId) => {
+    socket.on('demitirFuncionario', async (dados) => {
         const playerId = getPlayerId();
         if (!playerId) return socket.emit('erroServidor', { erro: 'Jogador não identificado' });
-        const resultado = await EmpresaController.demitirFuncionario(null, playerId, funcionarioId);
+        const resultado = await EmpresaController.demitirFuncionario(dados?.empresaId, playerId, dados?.funcionarioId);
         socket.emit(resultado.sucesso ? 'funcionarioDemitido' : 'erroServidor', resultado);
     });
 

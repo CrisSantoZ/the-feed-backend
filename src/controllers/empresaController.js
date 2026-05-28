@@ -75,9 +75,10 @@ async function abrirVaga(empresaId, playerId, dados) {
             cargo: dados.cargo,
             descricao: dados.descricao || '',
             salario: dados.salario,
+            categoria: dados.categoria || 'entry',
             requisitos: {
-                habilidades: dados.requisitos?.habilidades || [],
-                nivelMinimo: dados.requisitos?.nivelMinimo || 1
+                nivelMinimo: dados.requisitos?.nivelMinimo || 1,
+                atributos: dados.requisitos?.atributos || {}
             }
         });
 
@@ -101,7 +102,7 @@ async function candidatarVaga(empresaId, vagaId, playerId) {
         if (!player) return { sucesso: false, erro: 'Personagem não encontrado' };
 
         const hab = player.habilidades;
-        const nivelPlayer = hab?.estatisticas?.nivelMedio ?? 1;
+        const nivelPlayer = hab?.estatisticas?.nivelMedio || 1;
 
         if (nivelPlayer < vaga.requisitos.nivelMinimo) {
             return { sucesso: false, erro: `Requer nível mínimo ${vaga.requisitos.nivelMinimo}. Seu nível: ${nivelPlayer}` };
@@ -210,6 +211,7 @@ async function contratarFuncionario(empresaId, vagaId, playerId, unidadeIndex) {
             player.economia.empresaNome = empresa.nomeFantasia || empresa.nome;
             player.economia.cargo = vaga.cargo;
             player.economia.salario = vaga.salario;
+            player.economia.ultimoPagamentoSalario = null;
             await player.save();
         }
 
