@@ -70,9 +70,10 @@ function configurarEmpresaSocket(io, socket, context) {
     });
 
     socket.on('pedirDemissao', async (dados) => {
-        const empresaId = dados?.empresaId || dados;
         const playerId = dados?.playerId || getPlayerId();
+        const empresaId = dados?.empresaId;
         if (!playerId) return socket.emit('erroServidor', { erro: 'Jogador não identificado' });
+        if (!empresaId) return socket.emit('erroServidor', { erro: 'Você não está empregado' });
         const resultado = await EmpresaController.pedirDemissao(empresaId, playerId);
         socket.emit(resultado.sucesso ? 'demissaoEfetuada' : 'erroServidor', resultado);
     });
