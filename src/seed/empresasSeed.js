@@ -299,6 +299,13 @@ async function seedEmpresas() {
     console.log('[SEED] Iniciando população de empresas...');
     let contador = 0;
 
+    // Remove empresas órfãs que não estão mais no seed
+    const nomesValidos = empresasData.map(e => e.nome);
+    const removidas = await Empresa.deleteMany({ nome: { $nin: nomesValidos } });
+    if (removidas.deletedCount > 0) {
+        console.log(`[SEED] ${removidas.deletedCount} empresas órfãs removidas`);
+    }
+
     for (const data of empresasData) {
         const existente = await Empresa.findOne({ nome: data.nome });
 
