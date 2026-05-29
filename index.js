@@ -17,9 +17,13 @@ const { seedEmpresas } = require('./src/seed/empresasSeed');
 
 const app = express();
 
-// CORS mais específico
+// CORS para múltiplas origens
+const origensPermitidas = process.env.CORS_ORIGINS 
+    ? process.env.CORS_ORIGINS.split(',') 
+    : ['https://the-feed-peach.vercel.app', 'http://localhost:5500', 'http://127.0.0.1:5500'];
+
 app.use(cors({
-    origin: ['https://the-feed-peach.vercel.app', 'https://dynamic-gumption-ff6744.netlify.app', 'http://localhost:5500', 'http://127.0.0.1:5500'],
+    origin: origensPermitidas,
     methods: ['GET', 'POST', 'OPTIONS'],
     credentials: true
 }));
@@ -30,7 +34,7 @@ app.use('/uploads', express.static('public/uploads'));
 const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
-        origin: ['https://the-feed-peach.vercel.app', 'https://dynamic-gumption-ff6744.netlify.app', 'http://localhost:5500', 'http://127.0.0.1:5500'],
+        origin: origensPermitidas,
         methods: ['GET', 'POST'],
         credentials: true,
         allowedHeaders: ['Content-Type', 'Authorization']
