@@ -262,7 +262,7 @@ const empresasData = [
         nome: 'Caixa Econômica Federal', nomeFantasia: 'Caixa Federal', descricao: 'Banco público responsável por programas sociais e habitação.', ramo: 'financeiro', cidade: 'Brasília', estado: 'Distrito Federal', nivel: 55, faturamentoBase: 55000,
         vagas: [
             { cargo: 'Estagiário', descricao: 'Programa de estágio em agências e unidades.', salarioSemanal: 1800, categoria: 'entry', ilimitada: true, requisitos: { nivelMinimo: 1, atributos: { inteligencia: 5, logica: 5 } } },
-            { cargo: 'Caixa Executivo', descricao: 'Operações bancárias e atendimento ao público.', salarioSemanal: 2800, categoria: 'entry', ilimitada: true, requisitos: { nivelMinimo: 1, atributos: { carisma: 8, memoria: 8, foco: 6 } } },
+            { cargo: 'Caixa Executivo', descricao: 'Operações bancárias e atendimento ao público.', salarioSemanal: 3500, categoria: 'mentais', ilimitada: true, requisitos: { nivelMinimo: 2, atributos: { carisma: 12, memoria: 12, foco: 8 } } },
             { cargo: 'Técnico Bancário', descricao: 'Análise de crédito e operações financeiras.', salarioSemanal: 3500, categoria: 'mentais', ilimitada: true, requisitos: { nivelMinimo: 2, atributos: { logica: 12, inteligencia: 12, foco: 10 } } }
         ]
     },
@@ -278,7 +278,7 @@ const empresasData = [
         nome: 'Bradesco S.A.', nomeFantasia: 'Bradesco', descricao: 'Um dos maiores bancos do Brasil, com ampla rede de agências.', ramo: 'financeiro', cidade: 'São Paulo', estado: 'São Paulo', nivel: 50, faturamentoBase: 50000,
         vagas: [
             { cargo: 'Jovem Aprendiz Bancário', descricao: 'Programa de desenvolvimento profissional.', salarioSemanal: 1700, categoria: 'entry', ilimitada: true, requisitos: { nivelMinimo: 1, atributos: { inteligencia: 5, memoria: 5 } } },
-            { cargo: 'Escriturário', descricao: 'Serviços bancários internos.', salarioSemanal: 2800, categoria: 'entry', ilimitada: true, requisitos: { nivelMinimo: 1, atributos: { inteligencia: 8, memoria: 8, foco: 5 } } },
+            { cargo: 'Escriturário', descricao: 'Serviços bancários internos.', salarioSemanal: 2500, categoria: 'entry', ilimitada: true, requisitos: { nivelMinimo: 1, atributos: { inteligencia: 8, memoria: 8, foco: 5 } } },
             { cargo: 'Gerente de Relacionamento', descricao: 'Gestão de carteira de clientes.', salarioSemanal: 12000, categoria: 'gerencia', ilimitada: true, requisitos: { nivelMinimo: 6, atributos: { gestao: 15, negociacao: 12, carisma: 15, inteligencia: 12 } } }
         ]
     },
@@ -287,7 +287,7 @@ const empresasData = [
         nome: 'Banco do Brasil - Agências SP', nomeFantasia: 'Banco do Brasil SP', descricao: 'Rede de agências do Banco do Brasil no estado de São Paulo.', ramo: 'financeiro', cidade: 'São Paulo', estado: 'São Paulo', nivel: 50, faturamentoBase: 45000,
         vagas: [
             { cargo: 'Estagiário Bancário', descricao: 'Programa de estágio com foco em atendimento.', salarioSemanal: 1800, categoria: 'entry', ilimitada: true, requisitos: { nivelMinimo: 1, atributos: { inteligencia: 5, memoria: 5 } } },
-            { cargo: 'Caixa', descricao: 'Atendimento ao público e operações.', salarioSemanal: 2500, categoria: 'entry', ilimitada: true, requisitos: { nivelMinimo: 1, atributos: { carisma: 8, memoria: 8, foco: 6 } } },
+            { cargo: 'Caixa Bancário', descricao: 'Atendimento ao público e operações.', salarioSemanal: 2500, categoria: 'entry', ilimitada: true, requisitos: { nivelMinimo: 1, atributos: { carisma: 8, memoria: 8, foco: 6 } } },
             { cargo: 'Analista de Crédito', descricao: 'Análise de concessão de crédito.', salarioSemanal: 7000, categoria: 'mentais', ilimitada: true, requisitos: { nivelMinimo: 4, atributos: { logica: 18, inteligencia: 18, contabilidade: 12 } } }
         ]
     }
