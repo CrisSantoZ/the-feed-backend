@@ -205,6 +205,90 @@ const empresasData = [
             { cargo: 'Promotor de Vendas', descricao: 'Divulgação de produtos e degustação.', salarioSemanal: 2000, categoria: 'sociais', requisitos: { nivelMinimo: 1, atributos: { carisma: 14, persuasao: 10 } } },
             { cargo: 'Confeiteiro', descricao: 'Preparo de doces e sobremesas.', salarioSemanal: 3500, categoria: 'profissionais', requisitos: { nivelMinimo: 2, atributos: { culinaria: 15, criatividade: 12 } } }
         ]
+    },
+
+    // ==================== GRANDES CORPORAÇÕES (VAGAS ILIMITADAS) ====================
+
+    // JBS S.A. (Friboi, Seara, Swift)
+    {
+        nome: 'JBS S.A.', nomeFantasia: 'JBS', descricao: 'Maior processadora de carnes do mundo, com unidades em todo o Brasil.', ramo: 'alimenticio', cidade: 'São Paulo', estado: 'São Paulo', nivel: 50, faturamentoBase: 50000,
+        vagas: [
+            { cargo: 'Auxiliar de Produção', descricao: 'Linha de processamento de alimentos. Sem experiência necessária.', salarioSemanal: 1700, categoria: 'entry', ilimitada: true, requisitos: { nivelMinimo: 1, atributos: { resistencia: 5 } } },
+            { cargo: 'Açougueiro Industrial', descricao: 'Corte e desossa de carnes.', salarioSemanal: 2800, categoria: 'fisicas', ilimitada: true, requisitos: { nivelMinimo: 2, atributos: { forca: 12, resistencia: 10 } } },
+            { cargo: 'Motorista de Distribuição', descricao: 'Entrega de produtos refrigerados.', salarioSemanal: 3200, categoria: 'fisicas', ilimitada: true, requisitos: { nivelMinimo: 2, atributos: { forca: 10, resistencia: 12, foco: 10 } } }
+        ]
+    },
+    {
+        nome: 'Unimed do Brasil', nomeFantasia: 'Unimed', descricao: 'Maior cooperativa de saúde do mundo, com presença nacional.', ramo: 'saude', cidade: 'São Paulo', estado: 'São Paulo', nivel: 45, faturamentoBase: 40000,
+        vagas: [
+            { cargo: 'Atendente de Plano de Saúde', descricao: 'Teleatendimento e agendamento de consultas.', salarioSemanal: 1800, categoria: 'entry', ilimitada: true, requisitos: { nivelMinimo: 1, atributos: { carisma: 5, memoria: 5 } } },
+            { cargo: 'Auxiliar Administrativo', descricao: 'Suporte em unidades e hospitais da rede.', salarioSemanal: 2200, categoria: 'entry', ilimitada: true, requisitos: { nivelMinimo: 1, atributos: { inteligencia: 6, foco: 5 } } },
+            { cargo: 'Técnico de Enfermagem', descricao: 'Atendimento em clínicas da cooperativa.', salarioSemanal: 3500, categoria: 'profissionais', ilimitada: true, requisitos: { nivelMinimo: 2, atributos: { primeirosSocorros: 12, foco: 12 } } }
+        ]
+    },
+    {
+        nome: 'Grupo Carrefour Brasil', nomeFantasia: 'Carrefour', descricao: 'Maior rede de hipermercados do Brasil.', ramo: 'comercio', cidade: 'São Paulo', estado: 'São Paulo', nivel: 40, faturamentoBase: 35000,
+        vagas: [
+            { cargo: 'Operador de Caixa', descricao: 'Registro de compras e atendimento ao cliente.', salarioSemanal: 1700, categoria: 'entry', ilimitada: true, requisitos: { nivelMinimo: 1, atributos: { memoria: 5, foco: 5 } } },
+            { cargo: 'Repositor de Mercadorias', descricao: 'Abastecimento de gôndolas e organização.', salarioSemanal: 1700, categoria: 'entry', ilimitada: true, requisitos: { nivelMinimo: 1, atributos: { forca: 6, resistencia: 5 } } },
+            { cargo: 'Açougueiro', descricao: 'Corte e embalagem de carnes.', salarioSemanal: 2500, categoria: 'fisicas', ilimitada: true, requisitos: { nivelMinimo: 2, atributos: { forca: 12, resistencia: 8 } } }
+        ]
+    },
+    {
+        nome: 'BRF S.A.', nomeFantasia: 'BRF', descricao: 'Dona das marcas Sadia, Perdigão e Qualy, maior food company do Brasil.', ramo: 'alimenticio', cidade: 'São Paulo', estado: 'São Paulo', nivel: 45, faturamentoBase: 38000,
+        vagas: [
+            { cargo: 'Operador de Produção', descricao: 'Linha de produção de alimentos industrializados.', salarioSemanal: 1800, categoria: 'entry', ilimitada: true, requisitos: { nivelMinimo: 1, atributos: { resistencia: 5, foco: 5 } } },
+            { cargo: 'Técnico de Qualidade', descricao: 'Inspeção e controle de qualidade alimentar.', salarioSemanal: 3200, categoria: 'profissionais', ilimitada: true, requisitos: { nivelMinimo: 2, atributos: { foco: 12, logica: 10 } } }
+        ]
+    },
+    {
+        nome: 'Empresa Brasileira de Correios e Telégrafos', nomeFantasia: 'Correios', descricao: 'Empresa pública de serviços postais e logística, presente em todo o Brasil.', ramo: 'transporte', cidade: 'Brasília', estado: 'Distrito Federal', nivel: 50, faturamentoBase: 30000,
+        vagas: [
+            { cargo: 'Carteiro', descricao: 'Entrega de correspondências e encomendas.', salarioSemanal: 2500, categoria: 'entry', ilimitada: true, requisitos: { nivelMinimo: 1, atributos: { resistencia: 8, velocidade: 6 } } },
+            { cargo: 'Atendente Comercial', descricao: 'Atendimento ao público em agências.', salarioSemanal: 2200, categoria: 'entry', ilimitada: true, requisitos: { nivelMinimo: 1, atributos: { carisma: 6, memoria: 5 } } },
+            { cargo: 'Operador de Triagem', descricao: 'Separação e encaminhamento de encomendas.', salarioSemanal: 2000, categoria: 'entry', ilimitada: true, requisitos: { nivelMinimo: 1, atributos: { forca: 6, foco: 5 } } }
+        ]
+    },
+    {
+        nome: 'Itaú Unibanco Holding S.A.', nomeFantasia: 'Itaú', descricao: 'Maior banco privado do Brasil, com agências em todo o território nacional.', ramo: 'financeiro', cidade: 'São Paulo', estado: 'São Paulo', nivel: 55, faturamentoBase: 60000,
+        vagas: [
+            { cargo: 'Jovem Aprendiz', descricao: 'Programa de aprendizado com atividades administrativas.', salarioSemanal: 1600, categoria: 'entry', ilimitada: true, requisitos: { nivelMinimo: 1, atributos: { inteligencia: 5, logica: 5 } } },
+            { cargo: 'Caixa Bancário', descricao: 'Atendimento ao público e operações bancárias.', salarioSemanal: 2500, categoria: 'entry', ilimitada: true, requisitos: { nivelMinimo: 1, atributos: { carisma: 8, memoria: 8, foco: 5 } } },
+            { cargo: 'Assistente Administrativo', descricao: 'Suporte a gerência e análise de documentos.', salarioSemanal: 3000, categoria: 'mentais', ilimitada: true, requisitos: { nivelMinimo: 2, atributos: { inteligencia: 10, memoria: 10, foco: 8 } } }
+        ]
+    },
+    {
+        nome: 'Caixa Econômica Federal', nomeFantasia: 'Caixa Federal', descricao: 'Banco público responsável por programas sociais e habitação.', ramo: 'financeiro', cidade: 'Brasília', estado: 'Distrito Federal', nivel: 55, faturamentoBase: 55000,
+        vagas: [
+            { cargo: 'Estagiário', descricao: 'Programa de estágio em agências e unidades.', salarioSemanal: 1800, categoria: 'entry', ilimitada: true, requisitos: { nivelMinimo: 1, atributos: { inteligencia: 5, logica: 5 } } },
+            { cargo: 'Caixa Executivo', descricao: 'Operações bancárias e atendimento ao público.', salarioSemanal: 2800, categoria: 'entry', ilimitada: true, requisitos: { nivelMinimo: 1, atributos: { carisma: 8, memoria: 8, foco: 6 } } },
+            { cargo: 'Técnico Bancário', descricao: 'Análise de crédito e operações financeiras.', salarioSemanal: 3500, categoria: 'mentais', ilimitada: true, requisitos: { nivelMinimo: 2, atributos: { logica: 12, inteligencia: 12, foco: 10 } } }
+        ]
+    },
+    {
+        nome: 'Assaí Atacadista', nomeFantasia: 'Assaí', descricao: 'Maior rede de atacarejo do Brasil, com lojas em todos os estados.', ramo: 'comercio', cidade: 'São Paulo', estado: 'São Paulo', nivel: 35, faturamentoBase: 30000,
+        vagas: [
+            { cargo: 'Operador de Loja', descricao: 'Abastecimento, precificação e organização de loja.', salarioSemanal: 1700, categoria: 'entry', ilimitada: true, requisitos: { nivelMinimo: 1, atributos: { forca: 6, resistencia: 5 } } },
+            { cargo: 'Empacotador', descricao: 'Auxílio no empacotamento de compras.', salarioSemanal: 1600, categoria: 'entry', ilimitada: true, requisitos: { nivelMinimo: 1, atributos: { velocidade: 5, resistencia: 5 } } },
+            { cargo: 'Conferente de Mercadorias', descricao: 'Conferência de entrada e saída de produtos.', salarioSemanal: 1900, categoria: 'entry', ilimitada: true, requisitos: { nivelMinimo: 1, atributos: { memoria: 6, foco: 5 } } }
+        ]
+    },
+    {
+        nome: 'Bradesco S.A.', nomeFantasia: 'Bradesco', descricao: 'Um dos maiores bancos do Brasil, com ampla rede de agências.', ramo: 'financeiro', cidade: 'São Paulo', estado: 'São Paulo', nivel: 50, faturamentoBase: 50000,
+        vagas: [
+            { cargo: 'Jovem Aprendiz Bancário', descricao: 'Programa de desenvolvimento profissional.', salarioSemanal: 1700, categoria: 'entry', ilimitada: true, requisitos: { nivelMinimo: 1, atributos: { inteligencia: 5, memoria: 5 } } },
+            { cargo: 'Escriturário', descricao: 'Serviços bancários internos.', salarioSemanal: 2800, categoria: 'entry', ilimitada: true, requisitos: { nivelMinimo: 1, atributos: { inteligencia: 8, memoria: 8, foco: 5 } } },
+            { cargo: 'Gerente de Relacionamento', descricao: 'Gestão de carteira de clientes.', salarioSemanal: 12000, categoria: 'gerencia', ilimitada: true, requisitos: { nivelMinimo: 6, atributos: { gestao: 15, negociacao: 12, carisma: 15, inteligencia: 12 } } }
+        ]
+    },
+    // Expande Banco do Brasil que já existe com mais vagas
+    {
+        nome: 'Banco do Brasil - Agências SP', nomeFantasia: 'Banco do Brasil SP', descricao: 'Rede de agências do Banco do Brasil no estado de São Paulo.', ramo: 'financeiro', cidade: 'São Paulo', estado: 'São Paulo', nivel: 50, faturamentoBase: 45000,
+        vagas: [
+            { cargo: 'Estagiário Bancário', descricao: 'Programa de estágio com foco em atendimento.', salarioSemanal: 1800, categoria: 'entry', ilimitada: true, requisitos: { nivelMinimo: 1, atributos: { inteligencia: 5, memoria: 5 } } },
+            { cargo: 'Caixa', descricao: 'Atendimento ao público e operações.', salarioSemanal: 2500, categoria: 'entry', ilimitada: true, requisitos: { nivelMinimo: 1, atributos: { carisma: 8, memoria: 8, foco: 6 } } },
+            { cargo: 'Analista de Crédito', descricao: 'Análise de concessão de crédito.', salarioSemanal: 7000, categoria: 'mentais', ilimitada: true, requisitos: { nivelMinimo: 4, atributos: { logica: 18, inteligencia: 18, contabilidade: 12 } } }
+        ]
     }
 ];
 
@@ -222,6 +306,7 @@ async function seedEmpresas() {
             descricao: v.descricao,
             salario: v.salarioSemanal,
             categoria: v.categoria,
+            ilimitada: v.ilimitada || false,
             requisitos: {
                 nivelMinimo: v.requisitos.nivelMinimo,
                 atributos: v.requisitos.atributos || {}

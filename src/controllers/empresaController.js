@@ -143,7 +143,9 @@ async function candidatarVaga(empresaId, vagaId, playerId) {
                 status: 'ativo'
             });
 
-            vaga.status = 'preenchida';
+            if (!vaga.ilimitada) {
+                vaga.status = 'preenchida';
+            }
             empresa.totalFuncionariosContratados += 1;
             await empresa.save();
 
@@ -363,6 +365,7 @@ async function listarVagasDisponiveis(pais, estado, cidade) {
                         descricao: vaga.descricao,
                         salario: vaga.salario,
                         categoria: vaga.categoria || 'entry',
+                        ilimitada: vaga.ilimitada || false,
                         requisitos: vaga.requisitos,
                         totalCandidatos: vaga.candidatos?.length || 0
                     });

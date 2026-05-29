@@ -16,6 +16,7 @@ const VagaSchema = new mongoose.Schema({
     descricao: String,
     salario: { type: Number, required: true },
     categoria: { type: String, enum: ['entry', 'fisicas', 'mentais', 'profissionais', 'sociais', 'gerencia'], default: 'entry' },
+    ilimitada: { type: Boolean, default: false },
     requisitos: {
         nivelMinimo: { type: Number, default: 1 },
         atributos: { type: mongoose.Schema.Types.Mixed, default: {} }
