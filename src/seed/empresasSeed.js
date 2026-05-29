@@ -62,7 +62,7 @@ const empresasData = [
         nome: 'Banco do Brasil - Agência Paulista', nomeFantasia: 'Banco do Brasil', descricao: 'Agência bancária com serviços financeiros.', ramo: 'financeiro', cidade: 'São Paulo', estado: 'São Paulo', nivel: 25, faturamentoBase: 12000,
         vagas: [
             { cargo: 'Escriturário', descricao: 'Serviços bancários internos.', salarioSemanal: 2500, categoria: 'entry', requisitos: { nivelMinimo: 1, atributos: { inteligencia: 8, memoria: 5 } } },
-            { cargo: 'Caixa', descricao: 'Atendimento ao público.', salarioSemanal: 2300, categoria: 'sociais', requisitos: { nivelMinimo: 2, atributos: { carisma: 12, foco: 10 } } },
+            { cargo: 'Caixa', descricao: 'Atendimento ao público.', salarioSemanal: 2500, categoria: 'sociais', requisitos: { nivelMinimo: 2, atributos: { carisma: 12, foco: 10 } } },
             { cargo: 'Gerente de Contas', descricao: 'Gestão de carteira de clientes.', salarioSemanal: 15000, categoria: 'gerencia', requisitos: { nivelMinimo: 7, atributos: { gestao: 20, negociacao: 15, carisma: 20, inteligencia: 15 } } },
             { cargo: 'Analista Financeiro', descricao: 'Análise de crédito e investimentos.', salarioSemanal: 9000, categoria: 'mentais', requisitos: { nivelMinimo: 4, atributos: { logica: 20, inteligencia: 20, contabilidade: 10 } } }
         ]
@@ -161,7 +161,7 @@ const empresasData = [
     {
         nome: 'Hospital Mater Dei', nomeFantasia: 'Mater Dei', descricao: 'Rede de hospitais particular de Belo Horizonte.', ramo: 'saude', cidade: 'Belo Horizonte', estado: 'Minas Gerais', nivel: 25, faturamentoBase: 10000,
         vagas: [
-            { cargo: 'Maqueiro', descricao: 'Transporte de pacientes.', salarioSemanal: 1900, categoria: 'fisicas', requisitos: { nivelMinimo: 1, atributos: { forca: 12, resistencia: 10 } } },
+            { cargo: 'Maqueiro', descricao: 'Transporte de pacientes.', salarioSemanal: 1900, categoria: 'entry', requisitos: { nivelMinimo: 1, atributos: { forca: 12, resistencia: 10 } } },
             { cargo: 'Enfermeiro Plantonista', descricao: 'Assistência em enfermaria.', salarioSemanal: 5000, categoria: 'profissionais', requisitos: { nivelMinimo: 3, atributos: { primeirosSocorros: 20, foco: 20, resistencia: 15, empatia: 15 } } },
             { cargo: 'Recepcionista Hospitalar', descricao: 'Atendimento ao público e agendamento.', salarioSemanal: 2000, categoria: 'sociais', requisitos: { nivelMinimo: 1, atributos: { carisma: 12, memoria: 8 } } }
         ]
@@ -215,7 +215,8 @@ const empresasData = [
         vagas: [
             { cargo: 'Auxiliar de Produção', descricao: 'Linha de processamento de alimentos. Sem experiência necessária.', salarioSemanal: 1700, categoria: 'entry', ilimitada: true, requisitos: { nivelMinimo: 1, atributos: { resistencia: 5 } } },
             { cargo: 'Açougueiro Industrial', descricao: 'Corte e desossa de carnes.', salarioSemanal: 2800, categoria: 'fisicas', ilimitada: true, requisitos: { nivelMinimo: 2, atributos: { forca: 12, resistencia: 10 } } },
-            { cargo: 'Motorista de Distribuição', descricao: 'Entrega de produtos refrigerados.', salarioSemanal: 3200, categoria: 'fisicas', ilimitada: true, requisitos: { nivelMinimo: 2, atributos: { forca: 10, resistencia: 12, foco: 10 } } }
+            { cargo: 'Motorista de Distribuição', descricao: 'Entrega de produtos refrigerados.', salarioSemanal: 3200, categoria: 'fisicas', ilimitada: true, requisitos: { nivelMinimo: 2, atributos: { forca: 10, resistencia: 12, foco: 10 } } },
+            { cargo: 'Vigilante Patrimonial', descricao: 'Segurança patrimonial das unidades industriais.', salarioSemanal: 2200, categoria: 'fisicas', ilimitada: true, requisitos: { nivelMinimo: 1, atributos: { forca: 12, resistencia: 10, foco: 8 } } }
         ]
     },
     {
