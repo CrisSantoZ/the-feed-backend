@@ -61,7 +61,7 @@ const empresasData = [
     {
         nome: 'Banco do Brasil - Agência Paulista', nomeFantasia: 'Banco do Brasil', descricao: 'Agência bancária com serviços financeiros.', ramo: 'financeiro', cidade: 'São Paulo', estado: 'São Paulo', nivel: 25, faturamentoBase: 12000,
         vagas: [
-            { cargo: 'Escriturário', descricao: 'Serviços bancários internos.', salarioSemanal: 2500, categoria: 'entry', requisitos: { nivelMinimo: 1, atributos: { inteligencia: 8, memoria: 5 } } },
+            { cargo: 'Escriturário', descricao: 'Serviços bancários internos.', salarioSemanal: 2500, categoria: 'entry', requisitos: { nivelMinimo: 2, atributos: { inteligencia: 8, memoria: 5 } } },
             { cargo: 'Caixa', descricao: 'Atendimento ao público.', salarioSemanal: 2500, categoria: 'sociais', requisitos: { nivelMinimo: 2, atributos: { carisma: 12, foco: 10 } } },
             { cargo: 'Gerente de Contas', descricao: 'Gestão de carteira de clientes.', salarioSemanal: 15000, categoria: 'gerencia', requisitos: { nivelMinimo: 7, atributos: { gestao: 20, negociacao: 15, carisma: 20, inteligencia: 15 } } },
             { cargo: 'Analista Financeiro', descricao: 'Análise de crédito e investimentos.', salarioSemanal: 9000, categoria: 'mentais', requisitos: { nivelMinimo: 4, atributos: { logica: 20, inteligencia: 20, contabilidade: 10 } } }
@@ -106,7 +106,7 @@ const empresasData = [
     {
         nome: 'Petrobras - Sede Rio', nomeFantasia: 'Petrobras', descricao: 'Sede administrativa da Petrobras.', ramo: 'industria', cidade: 'Rio de Janeiro', estado: 'Rio de Janeiro', nivel: 50, faturamentoBase: 25000,
         vagas: [
-            { cargo: 'Auxiliar Administrativo', descricao: 'Suporte administrativo.', salarioSemanal: 2500, categoria: 'entry', requisitos: { nivelMinimo: 1, atributos: { inteligencia: 8, foco: 5 } } },
+            { cargo: 'Auxiliar Administrativo', descricao: 'Suporte administrativo.', salarioSemanal: 2500, categoria: 'entry', requisitos: { nivelMinimo: 2, atributos: { inteligencia: 8, foco: 5 } } },
             { cargo: 'Técnico de Segurança do Trabalho', descricao: 'Inspeções e normas de segurança.', salarioSemanal: 5000, categoria: 'profissionais', requisitos: { nivelMinimo: 3, atributos: { foco: 18, memoria: 15, construcao: 10 } } },
             { cargo: 'Engenheiro de Petróleo', descricao: 'Exploração e produção.', salarioSemanal: 20000, categoria: 'profissionais', requisitos: { nivelMinimo: 8, atributos: { inteligencia: 35, logica: 30, programacao: 10 } } }
         ]
@@ -245,7 +245,7 @@ const empresasData = [
     {
         nome: 'Empresa Brasileira de Correios e Telégrafos', nomeFantasia: 'Correios', descricao: 'Empresa pública de serviços postais e logística, presente em todo o Brasil.', ramo: 'transporte', cidade: 'Brasília', estado: 'Distrito Federal', nivel: 50, faturamentoBase: 30000,
         vagas: [
-            { cargo: 'Carteiro', descricao: 'Entrega de correspondências e encomendas.', salarioSemanal: 2500, categoria: 'entry', ilimitada: true, requisitos: { nivelMinimo: 1, atributos: { resistencia: 8, velocidade: 6 } } },
+            { cargo: 'Carteiro', descricao: 'Entrega de correspondências e encomendas.', salarioSemanal: 2500, categoria: 'entry', ilimitada: true, requisitos: { nivelMinimo: 2, atributos: { resistencia: 8, velocidade: 6 } } },
             { cargo: 'Atendente Comercial', descricao: 'Atendimento ao público em agências.', salarioSemanal: 2200, categoria: 'entry', ilimitada: true, requisitos: { nivelMinimo: 1, atributos: { carisma: 6, memoria: 5 } } },
             { cargo: 'Operador de Triagem', descricao: 'Separação e encaminhamento de encomendas.', salarioSemanal: 2000, categoria: 'entry', ilimitada: true, requisitos: { nivelMinimo: 1, atributos: { forca: 6, foco: 5 } } }
         ]
@@ -254,7 +254,7 @@ const empresasData = [
         nome: 'Itaú Unibanco Holding S.A.', nomeFantasia: 'Itaú', descricao: 'Maior banco privado do Brasil, com agências em todo o território nacional.', ramo: 'financeiro', cidade: 'São Paulo', estado: 'São Paulo', nivel: 55, faturamentoBase: 60000,
         vagas: [
             { cargo: 'Jovem Aprendiz', descricao: 'Programa de aprendizado com atividades administrativas.', salarioSemanal: 1600, categoria: 'entry', ilimitada: true, requisitos: { nivelMinimo: 1, atributos: { inteligencia: 5, logica: 5 } } },
-            { cargo: 'Caixa Bancário', descricao: 'Atendimento ao público e operações bancárias.', salarioSemanal: 2500, categoria: 'entry', ilimitada: true, requisitos: { nivelMinimo: 1, atributos: { carisma: 8, memoria: 8, foco: 5 } } },
+            { cargo: 'Caixa Bancário', descricao: 'Atendimento ao público e operações bancárias.', salarioSemanal: 2500, categoria: 'entry', ilimitada: true, requisitos: { nivelMinimo: 2, atributos: { carisma: 8, memoria: 8, foco: 5 } } },
             { cargo: 'Assistente Administrativo', descricao: 'Suporte a gerência e análise de documentos.', salarioSemanal: 3000, categoria: 'mentais', ilimitada: true, requisitos: { nivelMinimo: 2, atributos: { inteligencia: 10, memoria: 10, foco: 8 } } }
         ]
     },
@@ -278,7 +278,7 @@ const empresasData = [
         nome: 'Bradesco S.A.', nomeFantasia: 'Bradesco', descricao: 'Um dos maiores bancos do Brasil, com ampla rede de agências.', ramo: 'financeiro', cidade: 'São Paulo', estado: 'São Paulo', nivel: 50, faturamentoBase: 50000,
         vagas: [
             { cargo: 'Jovem Aprendiz Bancário', descricao: 'Programa de desenvolvimento profissional.', salarioSemanal: 1700, categoria: 'entry', ilimitada: true, requisitos: { nivelMinimo: 1, atributos: { inteligencia: 5, memoria: 5 } } },
-            { cargo: 'Escriturário', descricao: 'Serviços bancários internos.', salarioSemanal: 2500, categoria: 'entry', ilimitada: true, requisitos: { nivelMinimo: 1, atributos: { inteligencia: 8, memoria: 8, foco: 5 } } },
+            { cargo: 'Escriturário', descricao: 'Serviços bancários internos.', salarioSemanal: 2500, categoria: 'entry', ilimitada: true, requisitos: { nivelMinimo: 2, atributos: { inteligencia: 8, memoria: 8, foco: 5 } } },
             { cargo: 'Gerente de Relacionamento', descricao: 'Gestão de carteira de clientes.', salarioSemanal: 12000, categoria: 'gerencia', ilimitada: true, requisitos: { nivelMinimo: 6, atributos: { gestao: 15, negociacao: 12, carisma: 15, inteligencia: 12 } } }
         ]
     },
@@ -287,7 +287,7 @@ const empresasData = [
         nome: 'Banco do Brasil - Agências SP', nomeFantasia: 'Banco do Brasil SP', descricao: 'Rede de agências do Banco do Brasil no estado de São Paulo.', ramo: 'financeiro', cidade: 'São Paulo', estado: 'São Paulo', nivel: 50, faturamentoBase: 45000,
         vagas: [
             { cargo: 'Estagiário Bancário', descricao: 'Programa de estágio com foco em atendimento.', salarioSemanal: 1800, categoria: 'entry', ilimitada: true, requisitos: { nivelMinimo: 1, atributos: { inteligencia: 5, memoria: 5 } } },
-            { cargo: 'Caixa Bancário', descricao: 'Atendimento ao público e operações.', salarioSemanal: 2500, categoria: 'entry', ilimitada: true, requisitos: { nivelMinimo: 1, atributos: { carisma: 8, memoria: 8, foco: 6 } } },
+            { cargo: 'Caixa Bancário', descricao: 'Atendimento ao público e operações.', salarioSemanal: 2500, categoria: 'entry', ilimitada: true, requisitos: { nivelMinimo: 2, atributos: { carisma: 8, memoria: 8, foco: 6 } } },
             { cargo: 'Analista de Crédito', descricao: 'Análise de concessão de crédito.', salarioSemanal: 7000, categoria: 'mentais', ilimitada: true, requisitos: { nivelMinimo: 4, atributos: { logica: 18, inteligencia: 18, contabilidade: 12 } } }
         ]
     }
