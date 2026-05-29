@@ -349,7 +349,7 @@ async function seedEmpresas() {
                 estado: data.estado,
                 cidade: data.cidade,
                 capacidadeMaxima: 30,
-                nivel: Math.ceil(data.nivel / 5),
+                nivel: Math.min(10, Math.ceil(data.nivel / 5)),
                 faturamentoBase: data.faturamentoBase
             }],
             vagasAbertas: vagas
